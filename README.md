@@ -1,1 +1,3 @@
 # Display
+
+Main funciton of the display will be ...
