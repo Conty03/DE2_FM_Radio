@@ -1,1 +1,9 @@
-# DE2_FM_Radio
+# FM Radio
+
+Our team:
+
+Adam Keřka  
+Martin Čontoš  
+Karel Kubín 
+
+
