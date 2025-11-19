@@ -7,16 +7,14 @@ Martin Čontoš
 Karel Kubín 
 
 
+##Introduction
 
 We are using ATmega328P which is "an 8 bit 28-Pin AVR Microcontroller, manufactured by Microchip, follows RISC Architecture and has a flash-type program memory of 32KB". [cite](https://www.theengineeringprojects.com/2017/08/introduction-to-atmega328.html)
 
 
-## Display  
-Display branch is on this [link](https://github.com/Conty03/DE2_FM_Radio/tree/display)
-
-##
+## HW List
 
 
-##
+## SW list 
 
 
