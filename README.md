@@ -14,8 +14,8 @@ Karel Kubín
 
 | Component              | Model            | Description |
 |------------------------|------------------|-------------|
-| FM Module              | RDA5807M         | Low-power FM radio receiver (50–115 MHz) with I²C control. |
-| Display                | DEP128064C1-W    | 128×64 monochrome graphic LCD display. |
+| FM Module              | RDA5807M         | Low-power FM radio receiver (50–115 MHz) |
+| Display                | DEP128064C1-W    | 128×64 monochrome graphic OLED display. |
 | Microcontroller        | ATmega328P       | 8-bit AVR microcontroller commonly used in Arduino Uno. |
 | Audio Power Amplifier  | TPA741           | Low-voltage NF audio amplifier capable of driving small speakers. |
 
