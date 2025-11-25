@@ -26,9 +26,13 @@ This project focuses on the implementation of an FM receiver system using the RD
 
 The oled display is controlled by 3 wire SPI, using SCK, MOSI and CS + RS. Display then should provide a basic information about radio frequency.
 
-#define PIN_SCK   PB5
-#define PIN_MOSI  PB3
-#define PIN_CS    PB2
-#define PIN_RST   PB0
+#define PIN_SCK   PB5  
+#define PIN_MOSI  PB3  
+#define PIN_CS    PB2  
+#define PIN_RST   PB0  
 
+## References
+
+Library U8g2 for SSD1306 display driver by [OLIKRAUS] https://github.com/olikraus/u8g2/tree/master/csrc  
+Used together with [gpio.c](https://raw.githubusercontent.com/tomas-fryza/avr-labs/master/library/gpio/gpio.c) and [gpio.h](https://raw.githubusercontent.com/tomas-fryza/avr-labs/master/library/gpio/gpio.h)
 
