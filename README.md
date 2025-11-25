@@ -23,13 +23,11 @@ This project focuses on the implementation of an FM receiver system using the RD
 
 
 ## Software 
+Upon powering the device, the FM radio software initializes the FM module and immediately sets an initial frequency. This is achieved by calling the seek function, which scans the FM band and locks onto the strongest station available. The radio then begins to play without unnecessary delay.
 
-The oled display is controlled by 3 wire SPI, using SCK, MOSI and CS + RS. Display then should provide a basic information about radio frequency.
+After the start and fist radio frequency being set, it is now waiting for an user input. Up/Down buttons that request frequency changes trigger the appropriate adjustment, the FM module is then updated accordingly and it results in tuning the desired radio station. 
 
-#define PIN_SCK   PB5  
-#define PIN_MOSI  PB3  
-#define PIN_CS    PB2  
-#define PIN_RST   PB0  
+
 
 ## References
 
