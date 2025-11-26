@@ -19,13 +19,15 @@ This project focuses on the implementation of an FM receiver system using the RD
 | Display                | DEP128064C1-W    | 128×64 monochrome OLED display, SSD1306 driver. |
 | Microcontroller        | ATmega328P       | 8-bit AVR microcontroller commonly used in Arduino Uno. |
 | Audio Power Amplifier  | TPA741           | Low-voltage NF audio amplifier capable of driving small speakers. |
-
+| Programmer             | CP2102           | Universal programmer with USB-UART converter | 
+| 4pcs buttons           | ---              | --- | 
+| 2pcs Leds              | ---              | --- |           
 
 
 ## Software 
 Upon powering the device, the FM radio software initializes the FM module and immediately sets an initial frequency. This is achieved by calling the seek function, which scans the FM band and locks onto the strongest station available. The radio then begins to play without unnecessary delay.
 
-After the start and fist radio frequency being set, it is now waiting for an user input. Up/Down buttons that request frequency changes trigger the appropriate adjustment, the FM module is then updated accordingly and it results in tuning the desired radio station. 
+After the start a first radio frequency being set, it is now waiting for an user input. Up/Down buttons that request frequency changes trigger the appropriate adjustment, the FM module is then updated accordingly and it results in tuning the desired radio station. 
 
 
 
