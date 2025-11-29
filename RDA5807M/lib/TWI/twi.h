@@ -204,5 +204,7 @@ bool twi_writeToSlaveRegister(
 bool twi_readFromSlaveRegister(
     uint8_t address, uint8_t reg, uint8_t *data, size_t len);
 
+/*my modification:*/
+size_t twi_i2cScanner(uint8_t *found, size_t max_found);
 
 #endif // I2C_H_INCLUDED

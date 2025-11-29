@@ -39,7 +39,6 @@ void RDA5807mReset(void) {
 
     twi_writeToSlave(RDA5807M_I2C_ADR, (uint8_t*)&RDA5807Register, RDA5807M_REG_SIZE);
 
-
 }
 
 void RDA5807mInit(void) {

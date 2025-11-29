@@ -80,6 +80,10 @@
 
 void twi_init(void)
 {
+    /*my modification: internal pull-ups*/
+    DDRC &= ~((1 << PC4) | (1 << PC5));
+    PORTC |=  (1 << PC4) | (1 << PC5);
+
     TWBR = TWBR_VALUE;
     TWSR = (TWPS1_VALUE << TWPS1) | (TWPS0_VALUE << TWPS0);
 
@@ -332,4 +336,25 @@ bool twi_readFromSlaveRegister(uint8_t address, uint8_t reg,
     twi_stop();
 
     return 0;
+}
+
+/*my modification: I2C scanner function*/
+size_t twi_i2cScanner(uint8_t *found, size_t max_found)
+{
+    size_t count = 0;
+    for (uint8_t addr = 0x03; addr <= 0x77; addr++)
+    {
+        if (twi_start()) {
+            twi_stop();
+            continue;
+        }
+        if (!twi_addressWrite(addr)) { /* ACK received => device present */
+            if (found && count < max_found) {
+                found[count] = addr;
+            }
+            count++;
+        }
+        twi_stop();
+    }
+    return count;
 }

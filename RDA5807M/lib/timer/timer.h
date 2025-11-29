@@ -9,7 +9,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#include "tim_device.h"
+#include "timer.h"
 
 /* Function related to System Tick */
 void tim_tick_initialize(void);

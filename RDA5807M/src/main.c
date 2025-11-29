@@ -2,41 +2,47 @@
 #include <avr/interrupt.h>
 #include <stdint.h>
 //#include <stddef.h>
-//#include <stdio.h>
+#include <stdio.h>
 #include <twi.h>
 #include <rda5807m.h>
+#include <led.h>
+#include <util/delay.h>
+#include <uart.h>
+#include <timer.h>
 
 int main(void)
 {
     /* variables for CmdDispatch service */
-    //uint8_t rxStrlng;
-    //uint8_t* rxStrBuff = NULL;
+    uint8_t rxStrlng;
+    uint8_t* rxStrBuff = NULL;
 
     /* Initialize peripherals*/
-    //UARTinitiliaze(UART_ISR_MODE);
-    //tim_tick_initialize();
-    //gpio_initialize();
-    twi_init();
+    UARTinitiliaze(UART_ISR_MODE);
+    tim_tick_initialize();
+    _delay_ms(1000);
 
-  RDA5807mInit();
-  RDA5807mSetFreq(9950);
-  RDA5807mSetVolm(8);
+    gpio_initialize();
+    twi_init();
+    RDA5807mInit();
+
+    RDA5807mSetFreq(9950);
+    RDA5807mSetVolm(8);
 
     /* Enable interrupts */
     sei();
 
     /* printf redirected to UART in uart_interface.c*/
-    //printf("SYS_READY\n");
+    printf("SYS_READY\n");
 
     while(1) {
+        _delay_ms(1000);
+        gpio_LED_toggle();
         /* Check whether any new string has arrived (UART) */
-        /*
         rxStrBuff = UARTFetchReceivedLine(&rxStrlng);
         if (NULL != rxStrBuff) {
             // If so and is terminated by <LF>, process it as command
             CmdDispatch(rxStrBuff, rxStrlng);
         }
-        */
     }
 
     return 0;
