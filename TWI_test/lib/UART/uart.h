@@ -14,7 +14,7 @@
 /***********************************************************************/
 
 /* Defined speed of UART stage in Baud, note that 57600 is maximal */
-#define USART_BAUDRATE      (uint16_t)(9600)
+#define USART_BAUDRATE      (uint16_t)(2400)
 /* Calculating prescaler to set an appropriate baud speed */
 #define BAUD_PRESCALE       (uint16_t)(((F_CPU / (USART_BAUDRATE * 16UL))) - 1)
 

@@ -2,7 +2,7 @@
 
 /* If this define is 1, RDS settings across all
    functions are applied .. otherwise not */
-#define RDS_USED            1
+#define RDS_USED 1
 
 /* byte endianity solving macro for 16b variable*/
 #define swapbytes(byte)     ((((byte) & 0x00FF) << 8) | (((byte) & 0xFF00) >> 8))

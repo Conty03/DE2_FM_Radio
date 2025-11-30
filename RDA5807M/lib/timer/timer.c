@@ -1,4 +1,4 @@
-#include "tim_device.h"
+#include "timer.h"
 #include "stdio.h"
 
 /* Clock frequency of timer F_CPU/PRESCALER = 16MHz/64
