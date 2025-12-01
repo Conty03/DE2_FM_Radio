@@ -11,14 +11,15 @@ Karel Kubín
 This project focuses on the implementation of an FM receiver system using the RDA5807M FM module controlled by an ATmega328P microcontroller. A simple display is included to present basic information, and a low-voltage audio amplifier drives a small speaker, allowing us to both see and hear the signals received by the FM module. The goal of this project is to create a compact prototype radio system that can be further developed into even smaller designs in the future.
 
 
-## Hardware Used
+## Hardware list
 
 | Component              | Model            | Description |
 |------------------------|------------------|-------------|
 | FM Module              | RDA5807M         | Low-power FM radio receiver (50–115 MHz) |
 | Display                | DEP128064C1-W    | 128×64 monochrome OLED display, SSD1306 driver. |
-| Microcontroller        | ATmega328P       | 8-bit AVR microcontroller commonly used in Arduino Uno. |
+| Microcontroller        | ATmega328P       | 8-bit AVR microcontroller commonly used in Arduino UNO but 8 MHz. |
 | Audio Power Amplifier  | TPA741           | Low-voltage NF audio amplifier capable of driving small speakers. |
+| Speaker                | CDS-25148-L100   | power = 1.5 W, resistance = 8 omhs, intensity = 94 dBA |
 | Programmer             | CP2102           | Universal programmer with USB-UART converter | 
 | 4pcs buttons           | ---              | Serves for controlling frequency and seek-up function  | 
 | Led                    | ---              | Indicates power state ON/OFF  |           
@@ -36,5 +37,6 @@ Volume is controlled by potentiometer connected in the feedback loop of TPA741. 
 
 Library U8g2 for SSD1306 display driver by [OLIKRAUS] https://github.com/olikraus/u8g2/tree/master/csrc  
 Used together with [gpio.c](https://raw.githubusercontent.com/tomas-fryza/avr-labs/master/library/gpio/gpio.c) and [gpio.h](https://raw.githubusercontent.com/tomas-fryza/avr-labs/master/library/gpio/gpio.h)
+
 Library AVR_Si4703 for Si4703 FM module by [eziya] https://github.com/eziya/AVR_SI4703
 
