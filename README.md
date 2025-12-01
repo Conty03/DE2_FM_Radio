@@ -8,14 +8,14 @@ Karel Kubín
 
 
 ## Introduction
-This project focuses on the implementation of an FM receiver system using the RDA5807M FM module controlled by an ATmega328P microcontroller. A simple display is included to present basic information, and a low-voltage audio amplifier drives a small speaker, allowing us to both see and hear the signals received by the FM module. The goal of this project is to create a compact prototype radio system that can be further developed into even smaller designs in the future.
+This project focuses on the implementation of an FM receiver system using the Si4703 FM module controlled by an ATmega328P microcontroller. A simple display is included to present basic information, and a low-voltage audio amplifier drives a small speaker, allowing us to both see and hear the signals received by the FM module. The goal of this project is to create a compact prototype radio system that can be further developed into even smaller designs in the future.
 
 
 ## Hardware list
 
 | Component              | Model            | Description |
 |------------------------|------------------|-------------|
-| FM Module              | RDA5807M         | Low-power FM radio receiver (50–115 MHz) |
+| FM Module              | Si4703           | Low-power FM radio receiver (50–115 MHz) |
 | Display                | DEP128064C1-W    | 128×64 monochrome OLED display, SSD1306 driver. |
 | Microcontroller        | ATmega328P       | 8-bit AVR microcontroller commonly used in Arduino UNO but 8 MHz. |
 | Audio Power Amplifier  | TPA741           | Low-voltage NF audio amplifier capable of driving small speakers. |
