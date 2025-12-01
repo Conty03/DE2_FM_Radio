@@ -34,7 +34,7 @@ After the first radio frequency being set, radio is waiting for an user input. U
 
 Volume is controlled by potentiometer connected in the feedback loop of TPA741. In future we would like to utilize the internal DACs of Si4703 for adjusting the volume. Si4703 enables digital adjustment on 15 levels involving mute.
 
-![alt text](images/DE2_FMradio_flowchart.png)
+![alt text](images/DE2_FMradio_flowchart.drawio.png)
 
 ## References
 
