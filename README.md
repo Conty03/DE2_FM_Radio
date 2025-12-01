@@ -25,14 +25,16 @@ This project focuses on the implementation of an FM receiver system using the RD
 
 
 ## Software 
-Upon powering the device, the FM radio software initializes the FM module and immediately sets an initial frequency. This is achieved by calling the seek function, which scans the FM band and locks onto the strongest station available. The radio then begins to play without unnecessary delay.
+Upon powering the device, the ATmega328P initializes the FM module and display and immediately sets an initial frequency. This is achieved by calling the seek function, which scans the FM band and locks onto the strongest station available. Simultaneously initial frequency is displayed on the OLED. The radio then begins to play without unnecessary delay. 
 
-After the start a first radio frequency being set, it is now waiting for an user input. Up/Down buttons that request frequency changes trigger the appropriate adjustment, the FM module is then updated accordingly and it results in tuning the desired radio station. 
+After the first radio frequency being set, radio is waiting for an user input. Up/Down buttons request frequency changes by switching voltage on determined ATmega328P inputs. FM module is then updated accordingly and it results in tuning the desired radio station. Tuning radio is also possible by pressing the seek button triggering the seek-up function.
 
+Volume is controlled by potentiometer connected in the feedback loop of TPA741. In future we would like to utilize the internal DACs of Si4703 for adjusting the volume. Si4703 enables digital adjustment on 15 levels involving mute.
 
 
 ## References
 
 Library U8g2 for SSD1306 display driver by [OLIKRAUS] https://github.com/olikraus/u8g2/tree/master/csrc  
 Used together with [gpio.c](https://raw.githubusercontent.com/tomas-fryza/avr-labs/master/library/gpio/gpio.c) and [gpio.h](https://raw.githubusercontent.com/tomas-fryza/avr-labs/master/library/gpio/gpio.h)
+Library AVR_Si4703 for Si4703 FM module by [eziya] https://github.com/eziya/AVR_SI4703
 
