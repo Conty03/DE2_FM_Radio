@@ -20,8 +20,8 @@ This project focuses on the implementation of an FM receiver system using the RD
 | Microcontroller        | ATmega328P       | 8-bit AVR microcontroller commonly used in Arduino Uno. |
 | Audio Power Amplifier  | TPA741           | Low-voltage NF audio amplifier capable of driving small speakers. |
 | Programmer             | CP2102           | Universal programmer with USB-UART converter | 
-| 4pcs buttons           | ---              | --- | 
-| 2pcs Leds              | ---              | --- |           
+| 4pcs buttons           | ---              | Serves for controlling frequency and seek-up function  | 
+| Led                    | ---              | Indicates power state ON/OFF  |           
 
 
 ## Software 
