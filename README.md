@@ -10,8 +10,9 @@ Karel Kubín
 ## Introduction
 This project focuses on the implementation of an FM receiver system using the Si4703 FM module controlled by an ATmega328P microcontroller. A simple display is included to present basic information, and a low-voltage audio amplifier drives a small speaker, allowing us to both see and hear the signals received by the FM module. The goal of this project is to create a compact prototype radio system that can be further developed into even smaller designs in the future.
 
+![alt text](images/Circuit_diagram.png)
 
-## Hardware list
+## Hardware
 
 | Component              | Model            | Description |
 |------------------------|------------------|-------------|
@@ -27,7 +28,7 @@ This project focuses on the implementation of an FM receiver system using the Si
 
 ## Software 
 
-![alt text](./Circuit_diagram.png)
+![alt text](images/Circuit_diagram.png)
 
 Upon powering the device, the ATmega328P initializes the FM module and display and immediately sets an initial frequency. This is achieved by calling the seek function, which scans the FM band and locks onto the strongest station available. Simultaneously initial frequency is displayed on the OLED. The radio then begins to play without unnecessary delay. 
 
