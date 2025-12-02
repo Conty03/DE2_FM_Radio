@@ -17,8 +17,8 @@
 #include "SI4703.h"
 #include "128A_USART.h"
 
-#define CHANNEL1	104.7
-#define CHANNEL2	106.2
+#define CHANNEL1	103 /* Krokodyl */
+#define CHANNEL2	105.5 /* Evropa2 */
 
 /*char msg[150];*/
 
