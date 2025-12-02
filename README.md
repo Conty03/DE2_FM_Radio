@@ -71,3 +71,7 @@ Library AVR_Si4703 for Si4703 FM module by [eziya](https://github.com/eziya/AVR_
 
 Datasheet Si4703 [SKYWORKS](https://www.skyworksinc.com/-/media/SkyWorks/SL/documents/public/data-sheets/Si4702-03-C19.pdf)
 
+## Poster in progress...
+<p align = "center">
+<img width="595" height="837" alt="Poster in progress" src="https://github.com/user-attachments/assets/06b7dd49-2b31-4761-a114-d0c156959091" />
+
