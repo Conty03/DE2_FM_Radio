@@ -23,7 +23,7 @@ This project focuses on the implementation of an FM receiver system using the Si
 | FM Module              | Si4703           | Low-power FM radio receiver (50–115 MHz) |
 | Display                | DEP128064C1-W    | 128×64 monochrome OLED display, SSD1306 driver. |
 | Microcontroller        | ATmega328P       | 8-bit AVR microcontroller commonly used in Arduino UNO but 8 MHz. |
-| Audio Power Amplifier  | TPA741           | Low-voltage NF audio amplifier capable of driving small speakers. |
+| Audio Power Amplifier  | TPA741           | Low-voltage LF audio amplifier capable of driving small speakers. |
 | Speaker                | CDS-25148-L100   | power = 1.5 W, resistance = 8 omhs, intensity = 94 dBA |
 | Programmer             | CP2102           | Universal programmer with USB-UART converter | 
 | 4pcs buttons           | ---              | Serves for controlling frequency and seek-up function  | 
