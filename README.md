@@ -11,7 +11,7 @@ Karel Kubín
 This project focuses on the implementation of an FM receiver system using the Si4703 FM module controlled by an ATmega328P microcontroller. A simple display is included to present basic information, and a low-voltage audio amplifier drives a small speaker, allowing us to both see and hear the signals received by the FM module. The goal of this project is to create a compact prototype radio system that can be further developed into even more sophisticated designs in the future.
 
 <p align="center">
-  <img src="images/DE2_FMradio_diagram.png" alt="Circuit diagram" style="width:80%;">
+  <img src="images/DE2_FMradio_diagram.png" alt="Circuit diagram" style= "width:80%; margin-top:20px;">
 </p>
 
 ## Hardware
@@ -37,7 +37,7 @@ After the first radio frequency being set, radio is waiting for an user input. U
 Volume is controlled by potentiometer connected in the feedback loop of TPA741 amplifier. In future we would like to utilize the internal DACs of Si4703 for adjusting the volume. Si4703 enables digital adjustment on 15 levels involving mute.
 
 <p align="center">
-  <img src="images/DE2_FMradio_flowchart_v2.drawio.png" alt="Software flowchart">
+  <img src="images/DE2_FMradio_flowchart_v2.drawio.png" alt="Software flowchart" style= "margin-top:20px;">
 </p>
 
 ### Seek function
