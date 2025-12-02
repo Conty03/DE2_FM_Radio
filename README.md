@@ -40,10 +40,20 @@ Volume is controlled by potentiometer connected in the feedback loop of TPA741. 
   <img src="images/DE2_FMradio_flowchart_v2.drawio.png" alt="Software flowchart">
 </p>
 
+### Seek function
+Searches (seeks) radio station according to the strength of RSSI (Received Signal Strenght Indicator). In other words if Seek function finds a station which fulfils a lower limit of the RSSI, the station is tuned. Seek function is devided into SI4703_SeekUp() and SI4703_SeekDown() function. We can adjust seeking by setting appropriate register.
+
+#### Power configuration 02h
+Bits 8 to 10 (SEEK, SEEKUP, SKMODE) are reserved for Seek function. SEEK enables seeking by setting this bit to 1. SEEKUP determies direction of seeking within band 87.5 to 108 MHz. If we set SEEKUP bit to 1, it starts to "seek up" from actual frequency. Otherwise it starts to seek down. If SKMODE is set to 1, seek function stops seeking at the upper or lower band limit. In this project we prefer SKMODE to be set to 0, so the function continues seeking even after reaching the band limit.
+
+ 
+
 ## References
 
-Library U8g2 for SSD1306 display driver by [OLIKRAUS] https://github.com/olikraus/u8g2/tree/master/csrc  
+Library U8g2 for SSD1306 display driver by [OLIKRAUS](https://github.com/olikraus/u8g2/tree/master/csrc)
 Used together with [gpio.c](https://raw.githubusercontent.com/tomas-fryza/avr-labs/master/library/gpio/gpio.c) and [gpio.h](https://raw.githubusercontent.com/tomas-fryza/avr-labs/master/library/gpio/gpio.h)
 
-Library AVR_Si4703 for Si4703 FM module by [eziya] https://github.com/eziya/AVR_SI4703
+Library AVR_Si4703 for Si4703 FM module by [eziya](https://github.com/eziya/AVR_SI4703)
+
+Datasheet Si4703 [SKYWORKS](https://www.skyworksinc.com/-/media/SkyWorks/SL/documents/public/data-sheets/Si4702-03-C19.pdf)
 
