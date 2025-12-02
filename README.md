@@ -44,7 +44,7 @@ Volume is controlled by potentiometer connected in the feedback loop of TPA741. 
 Searches (seeks) radio station according to the strength of RSSI (Received Signal Strenght Indicator). In other words if Seek function finds a station which fulfils a lower limit of the RSSI, the station is tuned. Seek function is devided into SI4703_SeekUp() and SI4703_SeekDown() function. We can adjust seeking by setting appropriate register.
 
 #### Power configuration 02h
-Bits 8 to 10 (SEEK, SEEKUP, SKMODE) are reserved for Seek function. SEEK enables seeking by setting this bit to 1. SEEKUP determies direction of seeking within band 87.5 to 108 MHz. If we set SEEKUP bit to 1, it starts to "seek up" from actual frequency. Otherwise it starts to seek down. If SKMODE is set to 1, seek function stops seeking at the upper or lower band limit. In this project we prefer SKMODE to be set to 0, so the function continues seeking even after reaching the band limit.
+Bits 8 to 10 (SEEK, SEEKUP, SKMODE) are reserved for Seek function in Power configuration register. SEEK enables seeking by setting this bit to 1. SEEKUP determies direction of seeking within band 87.5 to 108 MHz. If we set SEEKUP bit to 1, it starts to "seek up" from actual frequency. Otherwise it starts to seek down. If SKMODE is set to 1, seek function stops seeking at the upper or lower band limit. In this project we prefer SKMODE to be set to 0, so the function continues seeking even after reaching the band limit.
 
  
 
