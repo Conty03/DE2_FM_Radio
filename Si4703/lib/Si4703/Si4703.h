@@ -12,6 +12,9 @@
 #include <avr/io.h>
 #include <stdbool.h>
 
+#define MIN_FREQ	87.5f
+#define MAX_FREQ	108.0f
+
 #define SI4703_DDRB		DDRB
 #define SI4703_DDRC		DDRC
 #define SI4703_PORTB	PORTB

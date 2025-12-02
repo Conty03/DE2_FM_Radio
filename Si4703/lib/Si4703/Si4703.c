@@ -163,8 +163,8 @@ float SI4703_GetFreq()
 
 bool SI4703_SetFreq(float freq)
 {
-	if(freq < 87.5) freq = 87.5;
-	if(freq > 108.0) freq = 108.0;
+	if(freq < MIN_FREQ) freq = MAX_FREQ;
+	if(freq > MAX_FREQ) freq = MIN_FREQ;
 	
 	/* C = (F - L) / S */
 	uint16_t channel = (freq - 87.5) / 0.2;
