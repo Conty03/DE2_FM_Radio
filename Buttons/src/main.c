@@ -63,7 +63,7 @@ ISR(PCINT2_vect)
     // PD2 (PCINT18)
     if ((newD & (1 << PD2)) == 0 && (oldD & (1 << PD2)) != 0) {
         
-        gpio_write_high(&PORTB, PB5);
+        gpio_toggle(&PORTB, PB5);
         /*
         actFrequency = SI4703_GetFreq();
         actFrequency = actFrequency + 100;
