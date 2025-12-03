@@ -1,8 +1,10 @@
 ﻿/*
  * SI4703.h
  *
- * Created: 2018-05-29 오전 10:42:54
- *  Author: kiki
+ * Created: 2018-05-29
+ * Author: kiki
+ * Reference: https://github.com/eziya/AVR_SI4703/tree/master
+ * 
  */ 
 
 

@@ -1,8 +1,10 @@
 ﻿/*
  * SI4703.c
  *
- * Created: 2018-05-29 오전 10:43:04
- *  Author: kiki
+ * Created: 2018-05-29
+ * Author: kiki
+ * Reference: https://github.com/eziya/AVR_SI4703/tree/master
+ * 
  */ 
 
 #ifndef F_CPU
@@ -64,7 +66,7 @@ bool SI4703_Init()
 	/* Set De-Emphasis 75us (Korea) */
 	SI4703_Regs[REG_SYSCONFIG1] &= ~(1 << IDX_DE);
 	
-	/* Set Band as 00 (Korea) */
+	/* Set Band as 00 (Europe) */
 	SI4703_Regs[REG_SYSCONFIG2] &= ~((1 << IDX_BAND0)|(1 << IDX_BAND1));
 	
 	/* Set Space as 00 (Korea) */
@@ -155,8 +157,8 @@ float SI4703_GetFreq()
 	
 	uint16_t channel = SI4703_Regs[REG_READCHAN] & MASK_READCHAN;
 	
-	/* F = (S x C) + L */
-	freq = (0.2 * channel) + 87.5;	/* Band rage is between 87.5 and 108MHz, Channel Space is 0.2MHz for Korea */
+	/* Frequency (MHz) = (Spacing (kHz) x Channel) + Bottom of band (MHz) */
+	freq = (0.1 * channel) + MIN_FREQ;	/* Band range is between 87.5 and 108MHz, Channel Space is 0.1MHz for Europe */
 		
 	return freq;
 }

@@ -1,6 +1,8 @@
 /*
  * SI4703.c
  *
+ * Created: 2018-05-29
+ * Author: kiki
  * Reference: https://github.com/eziya/AVR_SI4703/tree/master
  * 
  */ 
@@ -12,18 +14,36 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdio.h>
-#include <string.h>
+/*#include <string.h>*/
+#include <stdint.h>
 
 #include "SI4703.h"
 #include "128A_USART.h"
+#include <gpio.h>
 
-#define CHANNEL1	103 /* Krokodyl */
-#define CHANNEL2	105.5 /* Evropa2 */
+#define CHANNEL1	104.7
+#define CHANNEL2	106.2
+#define MONO		true
+
+/*Input pins used for buttons*/
+#define DDR		DDRD
+#define PORT	PORTD
+#define PIN		PIND
+#define D2		PD2		// Up
+#define D3		PD3 	// Down
+#define D4		PD4 	// Seek
+
+uint8_t volume = 8;
+
 
 /*char msg[150];*/
 
 int main(void)
 {	
+    gpio_mode_input_pullup(&DDRD, 2);
+	gpio_mode_input_pullup(&DDRD, 3);
+	gpio_mode_input_pullup(&DDRD, 4);
+
 	/*USART*/
 	/*USART0_Init();	
 	
@@ -44,11 +64,22 @@ int main(void)
 		sprintf(msg, "SI4703_Init succeeded.\r\n");
 		USART0_TxBuffer((uint8_t *)msg, strlen(msg));	
 	}*/
-		
+	
+	SI4703_SetMono(MONO);
 	SI4703_SeekUp();
+	SI4703_SetVolume(volume);
+
+	SI4703_GetFrequency();
  
     while (1) 
     {
-	/* Replace with your application code */
+		if (gpio_read(&PIND, 2) == 0) {
+			SI4703_SetFreq
+
+        } else if (gpio_read(&PIND, 3) == 0) {
+
+        } else {
+			SI4703_SeekUp();
+		}
 	}
 }
