@@ -118,12 +118,24 @@ volatile uint8_t fastTime = 0; // pocitadlo pro zvyseni prodlevy pred zrychlenim
 ISR(TIMER1_OVF_vect)
 {
     
-    
+    actFrequency = SI4703_GetFreq();
+
 
     if (buttonPressedLong == 0 && buttonPressedLong2 == 0) {
         if (initTime > 20) {
           buttonPressedLong = 1;
           gpio_toggle(&PORTB, PB5); // ===================================== AKCE 1 PRO PD2 A PD3 TLACITKA SPOLU (ZATIM - UP, DOWN)
+        
+           /*
+             if (buttonPD2isPressed == 1) {
+                actFrequency += 100;
+                SI4703_SetFreq(actFrequency);
+             } else {
+																actFrequency -= 100;
+               SI4703_SetFreq(actFrequency);
+             } 
+           */
+          
           initTime = 0;
         } else {
             initTime++;
