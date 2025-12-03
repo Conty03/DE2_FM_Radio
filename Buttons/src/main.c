@@ -45,12 +45,8 @@ int main(void)
 
     while (1) {
         // hlavní smyčka prázdná
-        if (buttonPD2isPressed == 1 && buttonPD2pressedLong == 0 && buttonPD2pressedLong2 == 0) {
-          tim1_ovf_1sec();
-          tim1_ovf_enable();
-        } else if (buttonPD2isPressed == 1 && buttonPD2pressedLong == 1 && buttonPD2pressedLong2 == 0) {
-          tim1_ovf_disable();
-          tim1_ovf_262ms();
+        if (buttonPD2isPressed == 1) {
+          tim1_ovf_33ms();
           tim1_ovf_enable();
         } else{
           tim1_ovf_disable();
@@ -67,7 +63,7 @@ ISR(PCINT2_vect)
     // PD2 (PCINT18)
     if ((newD & (1 << PD2)) == 0 && (oldD & (1 << PD2)) != 0) {
         
-        gpio_write_high(&PORTB, PB5);
+        gpio_toggle(&PORTB, PB5);
         /*
         actFrequency = SI4703_GetFreq();
         actFrequency = actFrequency + 100;
@@ -100,11 +96,51 @@ ISR(PCINT2_vect)
 
 ISR(TIMER1_OVF_vect)
 {
-    gpio_toggle(&PORTB, PB5);
+    volatile initTime = 0; // cas (pocet opakovani) pro dlouhy stisk
+    volatile fastTime = 0; // rychlost zmeny frekvence pomalejsi
+
+    
 
     if (buttonPD2pressedLong == 0 && buttonPD2pressedLong2 == 0) {
-      buttonPD2pressedLong = 1;
+        if (initTime > 30) {
+          buttonPD2pressedLong = 1;
+          gpio_toggle(&PORTB, PB5);
+          initTime = 0;
+        } else {
+            initTime++;
+        }
     } else if (buttonPD2pressedLong == 1 && buttonPD2pressedLong2 == 0){
-      buttonPD2pressedLong = 1;
+      
+        if (initTime > 15) {
+          gpio_toggle(&PORTB, PB5);
+          initTime = 0;
+          if (fastTime > 6) {
+              buttonPD2pressedLong2 = 1;
+          } else {
+              fastTime++;
+          }
+        } else {
+            initTime++;
+        }
+    } else if (buttonPD2pressedLong == 1 && buttonPD2pressedLong2 == 1){
+      
+        if (initTime > 7) {
+          gpio_toggle(&PORTB, PB5);
+          initTime = 0;
+        } else {
+            initTime++;
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
