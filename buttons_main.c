@@ -21,7 +21,7 @@ int main(void)
     gpio_mode_input_pullup(&DDRD, PD4);
 
     // --- Výstup PB0 (LED) ---
-    gpio_mode_output(&DDRB, PB0);
+    gpio_mode_output(&DDRB, PB5);
 
     oldD = PIND;   // uložit počáteční stav portu D
     
@@ -57,7 +57,7 @@ ISR(PCINT2_vect)
     uint8_t newD = PIND;   // čteme celý port D
 
     // PD2 (PCINT18)
-    if ((newD & (1 << PD2)) != 0 && (oldD & (1 << PD2)) == 0) {
+    if ((newD & (1 << PD2)) == 0 && (oldD & (1 << PD2)) != 0) {
         
         gpio_write_high(&PORTB, PB0);
         /*
@@ -68,7 +68,7 @@ ISR(PCINT2_vect)
        buttonPD2isPressed = 1;
     }
 
-    if ((newD & (1 << PD2)) == 0 && (oldD & (1 << PD2)) != 0) {
+    if ((newD & (1 << PD2)) != 0 && (oldD & (1 << PD2)) == 0) {
   
      buttonPD2isPressed = 0;
 
