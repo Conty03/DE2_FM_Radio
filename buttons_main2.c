@@ -42,7 +42,7 @@ int main(void)
 
     while (1) {
         // hlavní smyčka prázdná
-        if (buttonPD2isPressed == 1) {
+        if ((buttonPD2isPressed == 1) && ) {
           tim1_ovf_1sec();
           tim1_ovf_enable();
         } else {
