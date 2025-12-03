@@ -10,10 +10,10 @@
             "includePath": [
                 "D:/School/University/DE/sem_2/Projekt/DE2_FM_Radio/Si4703/include",
                 "D:/School/University/DE/sem_2/Projekt/DE2_FM_Radio/Si4703/src",
+                "D:/School/University/DE/sem_2/Projekt/DE2_FM_Radio/Si4703/lib/gpio",
                 "D:/School/University/DE/sem_2/Projekt/DE2_FM_Radio/Si4703/lib/Si4703",
                 "D:/School/University/DE/sem_2/Projekt/DE2_FM_Radio/Si4703/lib/TWI",
                 "D:/School/University/DE/sem_2/Projekt/DE2_FM_Radio/Si4703/lib/USART",
-                "D:/School/University/DE/sem_2/Projekt/DE2_FM_Radio/Si4703/lib/gpio",
                 ""
             ],
             "browse": {
@@ -21,10 +21,10 @@
                 "path": [
                     "D:/School/University/DE/sem_2/Projekt/DE2_FM_Radio/Si4703/include",
                     "D:/School/University/DE/sem_2/Projekt/DE2_FM_Radio/Si4703/src",
+                    "D:/School/University/DE/sem_2/Projekt/DE2_FM_Radio/Si4703/lib/gpio",
                     "D:/School/University/DE/sem_2/Projekt/DE2_FM_Radio/Si4703/lib/Si4703",
                     "D:/School/University/DE/sem_2/Projekt/DE2_FM_Radio/Si4703/lib/TWI",
                     "D:/School/University/DE/sem_2/Projekt/DE2_FM_Radio/Si4703/lib/USART",
-                    "D:/School/University/DE/sem_2/Projekt/DE2_FM_Radio/Si4703/lib/gpio",
                     ""
                 ]
             },
