@@ -44,10 +44,14 @@ int main(void)
 
     while (1) {
         // hlavní smyčka prázdná
-        if ((buttonPD2isPressed == 1) && (buttonPD2pressedLong == 0 && buttonPD2pressedLong2 == 0) {
+        if (buttonPD2isPressed == 1 && buttonPD2pressedLong == 0 && buttonPD2pressedLong2 == 0) {
           tim1_ovf_1sec();
           tim1_ovf_enable();
-        } elseif () {
+        } else if ((buttonPD2isPressed == 1 && buttonPD2pressedLong == 1 && buttonPD2pressedLong2 == 0)) {
+          tim1_ovf_disable();  
+          tim1_ovf_();  
+        } else if ((buttonPD2isPressed == 1 && buttonPD2pressedLong == 1 && buttonPD2pressedLong2 == 1)) {
+            
         } else{
           //tim1_ovf_disable();
           tim1_stop();
@@ -97,7 +101,7 @@ ISR(TIMER1_OVF_vect)
     
     if (buttonPD2pressedLong == 0 && buttonPD2pressedLong2 == 0) {
       buttonPD2pressedLong = 1;
-    } elseif (buttonPD2pressedLong == 1 && buttonPD2pressedLong2 == 0){
+    } else if (buttonPD2pressedLong == 1 && buttonPD2pressedLong2 == 0){
       buttonPD2pressedLong = 1;
     } 
 }
