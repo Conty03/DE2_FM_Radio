@@ -10,7 +10,9 @@
 
 volatile uint8_t oldD;
 uint32_t actFrequency; // Aktuální hodnota frekvence >>>>>>jaká velikost?<<<<<<<<<
-uint8_t buttonPD2isPressed = 0; //Je zmáčknuté tlačítko na pinu PD2
+uint8_t buttonPD2isPressed = 0; //Je zmáčknuté tlačítko na pinu PD2 >> 1
+uint8_t buttonPD2pressedLong = 0; // tlačítko už je zmáčknuté určitou dobu na pinu PD2 >> 1
+uint8_t buttonPD2pressedLong2 = 0; // tlačítko už je zmáčknuté určitou delší dobu na pinu PD2
 
 
 int main(void)
@@ -91,5 +93,11 @@ ISR(PCINT2_vect)
 ISR(TIMER1_OVF_vect)
 {
     gpio_toggle(&PORTB, PB0);
+    
+    if (buttonPD2pressedLong == 0 && buttonPD2pressedLong2 == 0) {
+      buttonPD2pressedLong = 1;
+    } elseif (buttonPD2pressedLong == 1 && buttonPD2pressedLong2 == 0){
+      buttonPD2pressedLong = 1;
+    } 
 }
  
