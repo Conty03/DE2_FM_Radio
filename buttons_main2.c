@@ -1,4 +1,4 @@
-#include <avr/io.h>
+6#include <avr/io.h>
 #include <util/delay.h>
 #include <stdio.h>
 #include <string.h>
@@ -44,10 +44,11 @@ int main(void)
 
     while (1) {
         // hlavní smyčka prázdná
-        if ((buttonPD2isPressed == 1) && ) {
+        if ((buttonPD2isPressed == 1) && (buttonPD2pressedLong == 0 && buttonPD2pressedLong2 == 0) {
           tim1_ovf_1sec();
           tim1_ovf_enable();
-        } else {
+        } elseif () {
+        } else{
           //tim1_ovf_disable();
           tim1_stop();
         }
