@@ -65,24 +65,13 @@ int main(void)
 		USART0_TxBuffer((uint8_t *)msg, strlen(msg));	
 	}*/
 	
-	//SI4703_SetMono(MONO);
 	SI4703_Init();
 	SI4703_SeekUp();
-	SI4703_SetVolume(volume);
 
 	//SI4703_GetFrequency();
  
     while (1) 
     {
 		/*Karel*/
-
-		/*if (gpio_read(&PIND, 2) == 0) {
-			SI4703_SetFreq();
-
-        } else if (gpio_read(&PIND, 3) == 0) {
-
-        } else {
-			SI4703_SeekUp();
-		}*/
 	}
 }

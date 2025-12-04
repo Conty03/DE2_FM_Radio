@@ -58,35 +58,35 @@ bool SI4703_Init()
 	SI4703_Regs[REG_POWERCFG] |= (1 << IDX_MONO);
 	
 	/* Set Seek Mode as Stop at band limit */
-	SI4703_Regs[REG_POWERCFG] |= (1 << IDX_SKMODE);
+	/*SI4703_Regs[REG_POWERCFG] |= (1 << IDX_SKMODE);*/
 	
 	/* Enable RDS */
 	SI4703_Regs[REG_SYSCONFIG1] |= (1 << IDX_RDS);
 	
-	/* Set De-Emphasis 75us (Korea) */
-	SI4703_Regs[REG_SYSCONFIG1] &= ~(1 << IDX_DE);
+	/* Set De-Emphasis 50us (Europe) */
+	SI4703_Regs[REG_SYSCONFIG1] |= (1 << IDX_DE);
 	
 	/* Set Band as 00 (Europe) */
-	SI4703_Regs[REG_SYSCONFIG2] &= ~((1 << IDX_BAND0)|(1 << IDX_BAND1));
+	SI4703_Regs[REG_SYSCONFIG2] &= ~((1 << IDX_BAND0)|(1 << IDX_BAND1)); 
 	
-	/* Set Space as 00 (Korea) */
-	SI4703_Regs[REG_SYSCONFIG2] &= ~((1 << IDX_SPACE0)|(1 << IDX_SPACE1));
+	/* Set Space as 01 (Europe) */
+	SI4703_Regs[REG_SYSCONFIG2] |= (1 << IDX_SPACE0);
 			
 	/* Set Volume as 0x0F */
-	SI4703_Regs[REG_SYSCONFIG2] &= 0xFFF0;
-	SI4703_Regs[REG_SYSCONFIG2] |= 0x0F;
+	SI4703_Regs[REG_SYSCONFIG2] &= 0xFFF0; // Clear volume bits (0000)
+	SI4703_Regs[REG_SYSCONFIG2] |= 0x0F; // Set volume to max (1111)
 	
 	/* Set Seek Threshold, Recommended 0x19 */
 	SI4703_Regs[REG_SYSCONFIG2] &= ~(MASK_SEEKTH);
-	SI4703_Regs[REG_SYSCONFIG2] |= (0x19 << 8);
+	SI4703_Regs[REG_SYSCONFIG2] |= (0x19 << 8); // max: 125
 	
 	/* Set SKSNR, Recommended 0x04 */
 	SI4703_Regs[REG_SYSCONFIG3] &= ~(MASK_SKSNR);	
-	SI4703_Regs[REG_SYSCONFIG3] |= (0x04 << 4);	
+	SI4703_Regs[REG_SYSCONFIG3] |= (0x04 << 4);	// max: 7
 	
 	/* Set SKCNT, Recommended 0x08 */
 	SI4703_Regs[REG_SYSCONFIG3] &= ~(MASK_SKCNT);	
-	SI4703_Regs[REG_SYSCONFIG3] |= 0x08;	
+	SI4703_Regs[REG_SYSCONFIG3] |= 0x08; // max: 15
 	
 	if(!SI4703_TxRegs()) return false;
 	
@@ -168,8 +168,8 @@ bool SI4703_SetFreq(float freq)
 	if(freq < MIN_FREQ) freq = MAX_FREQ;
 	if(freq > MAX_FREQ) freq = MIN_FREQ;
 	
-	/* C = (F - L) / S */
-	uint16_t channel = (freq - 87.5) / 0.2;
+	/* Channel = (Frequency - Bottom of band) / Spacing */
+	uint16_t channel = (freq - MIN_FREQ) / 0.1;
 	
 	if(!SI4703_RxRegs()) return false;
 	
