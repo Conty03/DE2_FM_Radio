@@ -44,6 +44,14 @@ Volume is controlled by potentiometer connected in the feedback loop of TPA741 a
   <img src="images/DE2_FMradio_flowchart_v2.drawio.png" alt="Software flowchart" style= "margin-top:40px;">
 </p>
 
+### Init function
+Init function initializes the Si4703 FM module. Main goal of initialization is to establish TWI communication between module and microcontroller and to set the module to standby mode (Power-up sequence). This function also sets default settings which are not intended to change during the program run: Mute Disable: ON, Mono: ON, RDS Enable: ON, De-emphasis: ON (50us), Band Select: 00 (87,5 - 105 MHz), Channel Spacing: 01 (100 kHz), Volume: 1111 (max), RSSI Seek Treshold: 0x19 (25 from <0;127>), Seek SNR Threshold: 0x04 (4 from <0;7>), Seek FM Impulse Detection Threshold: 0x08 (8 from <0;15>).
+
+### Mono function
+Si4703 has 2 pins dedicated for an audio output (L + R) too enable both Mono and Stereo audio modes. Since stereo mode requires system of 2 speakers we force Si4703 to output only mono (both pins then output the same signal).
+
+#### Power configuration 02h
+
 ### Seek function
 Searches (seeks) radio station according to the strength of RSSI (Received Signal Strenght Indicator). In other words if Seek function finds a station which fulfils a lower limit of the RSSI, the station is tuned. Seek function is devided into SI4703_SeekUp() and SI4703_SeekDown() function. We can adjust seeking by setting appropriate register.
 
@@ -54,7 +62,7 @@ Bits 8 to 10 (SEEK, SEEKUP, SKMODE) are reserved for Seek function in Power conf
 In SEEKTH[7:0] you can set RSSI seek treshold.
 
 ### Volume function
-Despite using potentiometer as part of UI (User Interface) for controlling volume, we have to set an initial volume of Si4703.
+Despite using potentiometer as part of UI (User Interface) for controlling volume, it is neccessary to set an initial volume of Si4703.
 
 #### System configuration 2 05h
 Volume can be controlled by VOLUME[3:0] bits in System configuration 2 register. Bit combination of "0000" stands for mute, which is also the default value, and combination of "1111" for maximum volume.  Volume scale is logarithmic.
