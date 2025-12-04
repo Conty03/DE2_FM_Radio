@@ -45,7 +45,7 @@ Volume is controlled by potentiometer connected in the feedback loop of TPA741 a
 </p>
 
 ### Init function
-Init function initializes the Si4703 FM module. Main goal of initialization is to establish TWI communication between module and microcontroller and to set the module to standby mode (Power-up sequence). This function also sets default settings which are not intended to change during the program run: Mute Disable: ON, Mono: ON, RDS Enable: ON, De-emphasis: ON (50us), Band Select: 00 (87,5 - 105 MHz), Channel Spacing: 01 (100 kHz), Volume: 1111 (max), RSSI Seek Treshold: 0x19 (25 from <0;127>), Seek SNR Threshold: 0x04 (4 from <0;7>), Seek FM Impulse Detection Threshold: 0x08 (8 from <0;15>).
+Init function initializes the Si4703. Main goal of initialization is to establish TWI communication between the FM module and microcontroller and to set the module to standby mode (Power-up sequence). This function also sets default settings which are not intended to change during the program run: Mute Disable: ON, Mono: ON, RDS Enable: ON, De-emphasis: ON (50us), Band Select: 00 (87,5 - 105 MHz), Channel Spacing: 01 (100 kHz), Volume: 1111 (max), RSSI Seek Treshold: 0x19 (25 from <0;127>), Seek SNR Threshold: 0x04 (4 from <0;7>), Seek FM Impulse Detection Threshold: 0x08 (8 from <0;15>).
 
 ### Mono function
 Si4703 has 2 pins dedicated for an audio output (L + R) too enable both Mono and Stereo audio modes. Since stereo mode requires system of 2 speakers we force Si4703 to output only mono (both pins then output the same signal).
