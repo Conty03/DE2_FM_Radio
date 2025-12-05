@@ -13,8 +13,8 @@ uint32_t actFrequency; // Aktuální hodnota frekvence >>>>>>jaká velikost?<<<<
 uint8_t buttonPD2isPressed = 0; //Je zmáčknuté tlačítko na pinu PD2
 uint8_t buttonPD3isPressed = 0; //Je zmáčknuté tlačítko na pinu PD3
 uint8_t buttonPD4isPressed = 0; //Je zmáčknuté tlačítko na pinu PD4
-uint8_t buttonPressedLong = 0; // tlačítko už je zmáčknuté určitou dobu >> 1
-uint8_t buttonPressedLong2 = 0; // tlačítko už je zmáčknuté určitou delší dobu >> 1
+uint8_t buttonPressedLong = 0; // tlačítko už je zmáčknuté určitou dobu
+uint8_t buttonPressedLong2 = 0; // tlačítko už je zmáčknuté určitou delší dobu
 uint8_t zkouska12 = 1; // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx potom smazat
 
 
