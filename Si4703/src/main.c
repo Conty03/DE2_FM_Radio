@@ -189,32 +189,25 @@ ISR(PCINT2_vect)
     } // xxxxxxxxxxxxxxxxxxxxxxxxx
     */
 
-    if (buttonPD3isPressed != 1) {
-    buttonPD2isPressed = 1;
-    }
-  }
+      if (buttonPD3isPressed != 1) {
+      buttonPD2isPressed = 1;
+      }
+   }
+ 
 
-  // PD2 (PCINT18) uvolnění
-  if ((newD & (1 << PD2)) != 0 && (oldD & (1 << PD2)) == 0) {
-  
-    buttonPD2isPressed = 0;
-    buttonPressedLong = 0;
-    buttonPressedLong2 = 0;
-
-  }
-
-  // PD3 (PCINT19) stisknutí - sníží frekvenci o 100 (krátký i dlouhý stisk)
-  if ((newD & (1 << PD3)) == 0 && (oldD & (1 << PD3)) != 0) {
-        
-    /*
-      if (zkouska12 = 1) { // xxxxxxxxxxxxxxxxxxxxxx vvvvvvvvvvvvv
+ 
+   // PD3 (PCINT19) stisknutí - sníží frekvenci o 100 (krátký i dlouhý stisk)
+   if ((newD & (1 << PD3)) == 0 && (oldD & (1 << PD3)) != 0) {
+ 
+      if (zkouska12 == 1) { // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx vvvvvvvvvvvv
+    
         gpio_toggle(&PORTB, PB5);
-      } else { // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ^^^^^^^^^^^^^
-        actFrequency = SI4703_GetFreq();
-        actFrequency = actFrequency - 100;
+      
+      } else {
+
+        actFrequency += 0.1;
         SI4703_SetFreq(actFrequency);
-      } // xxxxxxxxxxxxxxxxxxxxxxxxx
-    */
+      } // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ^^^^^^^^^^
 
     if (buttonPD2isPressed != 1) {
       buttonPD3isPressed = 1;
@@ -230,29 +223,15 @@ ISR(PCINT2_vect)
   }
 
 
-  // PD4 (PCINT20)
+  // PD4 (PCINT20) - funkce seek - najde nejbližší stanici na vyšší frekvenci
   if ((newD & (1 << PD4)) == 0 && (oldD & (1 << PD4)) != 0) {
-
-    gpio_toggle(&PORTB, PB5);
-
-    SI4703_SeekUp();
-    actFrequency = SI4703_GetFreq();
-
-    char buf[16];
-    dtostrf(actFrequency, 5, 1, buf);
-
-    u8g2_ClearBuffer(&u8g2);
-    u8g2_SetFont(&u8g2, u8g2_font_courB12_tf);
-    u8g2_DrawStr(&u8g2, 10, 10, "Frequency:");
-    u8g2_DrawStr(&u8g2, 10, 40, buf);
-    u8g2_SendBuffer(&u8g2);
-
-    /*Other option: Redraw with color box*/
-    /*
-    u8g2_SetDrawColor(&u8g2, 0);           // set color to black
-    u8g2_DrawBox(&u8g2, 10, 28, 60, 16);   // erase freq area
-    u8g2_SetDrawColor(&u8g2, 1);           // set color to white
-    */
+      
+    if (zkouska12 == 1) { // xxxxxxxxxxxxxxxxxxxxxx vvvvvvvvvvvvv
+      gpio_toggle(&PORTB, PB5);
+    } else { // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ^^^^^^^^^^^^^
+      SI4703_SeekUp();
+    } // xxxxxxxxxxxxxxxxxxxxxxxxx
+        
   }
   oldD = newD;
 }
@@ -272,86 +251,94 @@ ISR(TIMER1_OVF_vect)
       buttonPressedLong = 1;
 
       if (zkouska12 == 1) { // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx vvvvvvvvvvvv
-
-        gpio_toggle(&PORTB, PB5); // ===================================== AKCE 1 PRO PD2 A PD3 TLACITKA SPOLU (ZATIM - UP, DOWN)
-      
-      } else {
-
-        if (buttonPD2isPressed == 1) {
-          actFrequency += 100;
-        } else if (buttonPD3isPressed == 1) {
-          actFrequency -= 100;
-        } 
-
-        SI4703_SetFreq(actFrequency);
-      } // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ^^^^^^^^^^
-      
-      initTime = 0;
-    } else {
-        initTime++;
-    }
-
-  } else if (buttonPressedLong == 1 && buttonPressedLong2 == 0){ // dlouhý stisk - frekvence skáče v pravidelných intervalech nahoru/dolů
-    
-    if (initTime > 6) {
-      
-      if (zkouska12 == 1) { // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx vvvvvvvvvvvv
-
+  
         gpio_toggle(&PORTB, PB5);
       
       } else {
 
         if (buttonPD2isPressed == 1) {
-          actFrequency += 100;
+          actFrequency += 0.1;
         } else if (buttonPD3isPressed == 1) {
-          actFrequency -= 100;
+          actFrequency -= 0.1;
         } 
 
         SI4703_SetFreq(actFrequency);
       } // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ^^^^^^^^^^
 
-      initTime = 0;
-
-      if (fastTime > 6) {
-          buttonPressedLong2 = 1;
-          fastTime = 0;
-      } else {
-          fastTime++;
-      }
-
-    } else {
-        initTime++;
-    }
-
-  } else if (buttonPressedLong == 1 && buttonPressedLong2 == 1){ // nejdelší stisk - změna frekvence zrychlí
-    
-    if (initTime > 2) {
-
-      if (zkouska12 == 1) { // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx vvvvvvvvvvvv
-
-        gpio_toggle(&PORTB, PB5);
-      
-      } else {
-
-        if (buttonPD2isPressed == 1) {
-          actFrequency += 100;
-        } else if (buttonPD3isPressed == 1) {
-          actFrequency -= 100;
-        } 
-
-        SI4703_SetFreq(actFrequency);
-      } // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ^^^^^^^^^^
-
-      initTime = 0;
-
-    } else {
-        initTime++;
-    }
-  } else {
-      buttonPressedLong = 0;
-      buttonPressedLong2 = 0;
-      initTime = 0;
       fastTime = 0;
-  }
+    } else {
+      fastTime++;
+    }*/
 
-}
+    
+    if (initTime > 20) {
+       buttonPressedLong = 1;
+       initTime = 0;
+     } else {
+         initTime++;
+     }
+ 
+   } else if (buttonPressedLong == 1 && buttonPressedLong2 == 0){ // dlouhý stisk - frekvence skáče v pravidelných intervalech nahoru/dolů
+     
+     if (initTime > 6) {
+       
+       if (zkouska12 == 1) { // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx vvvvvvvvvvvv
+ 
+         gpio_toggle(&PORTB, PB5);
+       
+       } else {
+ 
+         if (buttonPD2isPressed == 1) {
+           actFrequency += 0.1;
+         } else if (buttonPD3isPressed == 1) {
+           actFrequency -= 0.1;
+         } 
+ 
+         SI4703_SetFreq(actFrequency);
+       } // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ^^^^^^^^^^
+ 
+       initTime = 0;
+ 
+       if (fastTime > 6) {
+           buttonPressedLong2 = 1;
+           fastTime = 0;
+       } else {
+           fastTime++;
+       }
+ 
+     } else {
+         initTime++;
+     }
+ 
+   } else if (buttonPressedLong == 1 && buttonPressedLong2 == 1){ // nejdelší stisk - změna frekvence zrychlí
+     
+     if (initTime > 2) {
+ 
+       if (zkouska12 == 1) { // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx vvvvvvvvvvvv
+ 
+         gpio_toggle(&PORTB, PB5);
+       
+       } else {
+ 
+         if (buttonPD2isPressed == 1) {
+           actFrequency += 0.1;
+         } else if (buttonPD3isPressed == 1) {
+           actFrequency -= 0.1;
+         } 
+ 
+         SI4703_SetFreq(actFrequency);
+       } // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ^^^^^^^^^^
+ 
+       initTime = 0;
+ 
+     } else {
+         initTime++;
+     }
+   } else {
+       buttonPressedLong = 0;
+       buttonPressedLong2 = 0;
+       initTime = 0;
+       fastTime = 0;
+   }
+ 
+ }
