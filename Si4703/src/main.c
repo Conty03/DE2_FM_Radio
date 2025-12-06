@@ -47,14 +47,16 @@
 
 u8g2_t u8g2;
 
-volatile uint8_t oldD;
-uint32_t actFrequency; // Aktuální hodnota frekvence >>>>>>jaká velikost?<<<<<<<<<
-uint8_t buttonPD2isPressed = 0; //Je zmáčknuté tlačítko na pinu PD2
-uint8_t buttonPD3isPressed = 0; //Je zmáčknuté tlačítko na pinu PD3
-uint8_t buttonPD4isPressed = 0; //Je zmáčknuté tlačítko na pinu PD4
-uint8_t buttonPressedLong = 0; // tlačítko už je zmáčknuté určitou dobu
-uint8_t buttonPressedLong2 = 0; // tlačítko už je zmáčknuté určitou delší dobu
-uint8_t zkouska12 = 2; // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx potom smazat
+ volatile uint8_t oldD;
+ float actFrequency; // Aktuální hodnota frekvence
+ uint8_t buttonPD2isPressed = 0; //Je zmáčknuté tlačítko na pinu PD2
+ uint8_t buttonPD3isPressed = 0; //Je zmáčknuté tlačítko na pinu PD3
+ uint8_t buttonPD4isPressed = 0; //Je zmáčknuté tlačítko na pinu PD4
+ uint8_t buttonPressedLong = 0; // tlačítko už je zmáčknuté určitou dobu
+ uint8_t buttonPressedLong2 = 0; // tlačítko už je zmáčknuté určitou delší dobu
+ uint8_t zkouska12 = 2; // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx potom smazat
+ volatile uint8_t initTime = 0; // pocitadlo nasobku doby preteceni timeru
+ volatile uint8_t fastTime = 0; // pocitadlo pro zvyseni prodlevy pred zrychlenim
 
 uint8_t volume = 8;
 
@@ -179,22 +181,20 @@ ISR(PCINT2_vect)
   // PD2 (PCINT18) stisknutí - zvýší frekvenci o 100 (krátký i dlouhý stisk)
   if ((newD & (1 << PD2)) == 0 && (oldD & (1 << PD2)) != 0) {
         
-    /*
-    if (zkouska12 = 1) { // xxxxxxxxxxxxxxxxxxxxxx vvvvvvvvvvvvv
+    if (zkouska12 == 1) { // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx vvvvvvvvvvvv
+
       gpio_toggle(&PORTB, PB5);
-    } else { // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ^^^^^^^^^^^^^
-      actFrequency = SI4703_GetFreq();
-      actFrequency = actFrequency + 100;
+    
+    } else {
+
+      actFrequency += 0.1;
       SI4703_SetFreq(actFrequency);
-    } // xxxxxxxxxxxxxxxxxxxxxxxxx
-    */
+    } // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ^^^^^^^^^^
 
       if (buttonPD3isPressed != 1) {
       buttonPD2isPressed = 1;
       }
    }
- 
-
  
    // PD3 (PCINT19) stisknutí - sníží frekvenci o 100 (krátký i dlouhý stisk)
    if ((newD & (1 << PD3)) == 0 && (oldD & (1 << PD3)) != 0) {
