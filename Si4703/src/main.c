@@ -39,7 +39,7 @@
  
  
  volatile uint8_t oldD;
- uint32_t actFrequency; // Aktuální hodnota frekvence
+ float actFrequency; // Aktuální hodnota frekvence
  uint8_t buttonPD2isPressed = 0; //Je zmáčknuté tlačítko na pinu PD2
  uint8_t buttonPD3isPressed = 0; //Je zmáčknuté tlačítko na pinu PD3
  uint8_t buttonPD4isPressed = 0; //Je zmáčknuté tlačítko na pinu PD4
@@ -169,7 +169,7 @@
  
    if (buttonPressedLong == 0 && buttonPressedLong2 == 0) { // krátký stisk - jdenorázová změna frekvence o 100
      
-    if (fastTime > 1) {
+    //if (fastTime > 1) {
       if (zkouska12 == 1) { // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx vvvvvvvvvvvv
   
         gpio_toggle(&PORTB, PB5);
@@ -177,18 +177,18 @@
       } else {
 
         if (buttonPD2isPressed == 1) {
-          actFrequency += 100;
+          actFrequency += 0.1;
         } else if (buttonPD3isPressed == 1) {
-          actFrequency -= 100;
+          actFrequency -= 0.1;
         } 
 
         SI4703_SetFreq(actFrequency);
       } // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ^^^^^^^^^^
-      
-      fastTime = 0;
+
+    /*  fastTime = 0;
     } else {
       fastTime++;
-    }
+    }*/
 
     
     if (initTime > 20) {
@@ -209,9 +209,9 @@
        } else {
  
          if (buttonPD2isPressed == 1) {
-           actFrequency += 100;
+           actFrequency += 0.1;
          } else if (buttonPD3isPressed == 1) {
-           actFrequency -= 100;
+           actFrequency -= 0.1;
          } 
  
          SI4703_SetFreq(actFrequency);
@@ -241,9 +241,9 @@
        } else {
  
          if (buttonPD2isPressed == 1) {
-           actFrequency += 100;
+           actFrequency += 0.1;
          } else if (buttonPD3isPressed == 1) {
-           actFrequency -= 100;
+           actFrequency -= 0.1;
          } 
  
          SI4703_SetFreq(actFrequency);
