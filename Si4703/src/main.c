@@ -226,19 +226,32 @@ ISR(PCINT2_vect)
   // PD4 (PCINT20) - funkce seek - najde nejbližší stanici na vyšší frekvenci
   if ((newD & (1 << PD4)) == 0 && (oldD & (1 << PD4)) != 0) {
       
-    if (zkouska12 == 1) { // xxxxxxxxxxxxxxxxxxxxxx vvvvvvvvvvvvv
-      gpio_toggle(&PORTB, PB5);
-    } else { // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ^^^^^^^^^^^^^
-      SI4703_SeekUp();
-    } // xxxxxxxxxxxxxxxxxxxxxxxxx
-        
+    gpio_toggle(&PORTB, PB5);
+
+    SI4703_SeekUp();
+    actFrequency = SI4703_GetFreq();
+
+    char buf[16];
+    dtostrf(actFrequency, 5, 1, buf);
+
+    u8g2_ClearBuffer(&u8g2);
+    u8g2_SetFont(&u8g2, u8g2_font_courB12_tf);
+    u8g2_DrawStr(&u8g2, 10, 10, "Frequency:");
+    u8g2_DrawStr(&u8g2, 10, 40, buf);
+    u8g2_SendBuffer(&u8g2);
+
+    /*Other option:*/
+    /*
+    u8g2_SetDrawColor(&u8g2, 0);           // black color
+    u8g2_DrawBox(&u8g2, 10, 28, 60, 16);   // clear area
+    u8g2_SetDrawColor(&u8g2, 1);           // white color
+
+    u8g2_DrawStr(&u8g2, 10, 40, buf);
+    u8g2_SendBuffer(&u8g2); 
+    */    
   }
   oldD = newD;
 }
-
-volatile uint8_t initTime = 0; // pocitadlo nasobku doby preteceni timeru
-volatile uint8_t fastTime = 0; // pocitadlo pro zvyseni prodlevy pred zrychlenim
-
 
 ISR(TIMER1_OVF_vect)
 {
@@ -268,7 +281,7 @@ ISR(TIMER1_OVF_vect)
       fastTime = 0;
     } else {
       fastTime++;
-    }*/
+    }
 
     
     if (initTime > 20) {
