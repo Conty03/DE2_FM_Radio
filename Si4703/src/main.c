@@ -39,7 +39,7 @@
  
  
  volatile uint8_t oldD;
- uint32_t actFrequency; // Aktuální hodnota frekvence >>>>>>jaká velikost?<<<<<<<<<
+ uint32_t actFrequency; // Aktuální hodnota frekvence
  uint8_t buttonPD2isPressed = 0; //Je zmáčknuté tlačítko na pinu PD2
  uint8_t buttonPD3isPressed = 0; //Je zmáčknuté tlačítko na pinu PD3
  uint8_t buttonPD4isPressed = 0; //Je zmáčknuté tlačítko na pinu PD4
