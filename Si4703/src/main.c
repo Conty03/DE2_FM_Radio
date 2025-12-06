@@ -12,24 +12,26 @@
 #include <avr/interrupt.h>
 #include "timer.h"
 
-#ifndef F_CPU
+#ifndef F_CPU // defined in platformio.ini, could be deleted?
 #define F_CPU	8000000L
 #endif
 
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 
 #include "SI4703.h"
 #include "128A_USART.h"
 #include <gpio.h>
+#include <u8g2.h>
 
-#define CHANNEL1	104.7
-#define CHANNEL2	106.2
+#define CHANNEL1	99.5  // Evropa2
+#define CHANNEL2	105.5 // Evropa2 (Brno)
 #define MONO		true
 
-/*Input pins used for buttons*/
+/*Buttons*/
 #define DDR		DDRD
 #define PORT	PORTD
 #define PIN		PIND
@@ -37,6 +39,13 @@
 #define D3		PD3 	// Down
 #define D4		PD4 	// Seek
 
+/*Display*/
+#define PIN_SCK   PB5
+#define PIN_MOSI  PB3
+#define PIN_CS    PB2
+#define PIN_RST   PB0
+
+u8g2_t u8g2;
 
 volatile uint8_t oldD;
 uint32_t actFrequency; // Aktuální hodnota frekvence >>>>>>jaká velikost?<<<<<<<<<
@@ -49,44 +58,80 @@ uint8_t zkouska12 = 2; // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 uint8_t volume = 8;
 
+static uint8_t gpio_cb(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+{
+    /* Suppress warnings about unused parameters */
+    (void)u8x8;
+    (void)arg_ptr;
 
-/*char msg[150];*/
+    switch(msg)
+    {
+        /* Init all required pins */
+        case U8X8_MSG_GPIO_AND_DELAY_INIT:
+            gpio_mode_output(&DDRB, PIN_SCK);
+            gpio_mode_output(&DDRB, PIN_MOSI);
+            gpio_mode_output(&DDRB, PIN_CS);
+            gpio_mode_output(&DDRB, PIN_RST);
+
+            gpio_write_high(&PORTB, PIN_CS);   // CS high (inactive)
+            gpio_write_high(&PORTB, PIN_RST);  // RST high
+            return 1;
+
+        /* Chip Select pin */
+        case U8X8_MSG_GPIO_CS:
+            if(arg_int)
+                gpio_write_high(&PORTB, PIN_CS);   // CS high
+            else
+                gpio_write_low(&PORTB, PIN_CS);   // CS low
+            return 1;
+
+        /* Reset pin */
+        case U8X8_MSG_GPIO_RESET:
+            if(arg_int)
+                gpio_write_high(&PORTB, PIN_RST);
+            else
+                gpio_write_low(&PORTB, PIN_RST);
+            return 1;
+
+        /* Clock pin */
+        case U8X8_MSG_GPIO_SPI_CLOCK:
+            if(arg_int)
+                gpio_write_high(&PORTB, PIN_SCK);
+            else
+                gpio_write_low(&PORTB, PIN_SCK);
+            return 1;
+
+        /* MOSI pin */
+        case U8X8_MSG_GPIO_SPI_DATA:
+            if(arg_int)
+                gpio_write_high(&PORTB, PIN_MOSI);
+            else
+                gpio_write_low(&PORTB, PIN_MOSI);
+            return 1;
+
+        /* Delay */
+        case U8X8_MSG_DELAY_MILLI:
+            while(arg_int--)
+                _delay_ms(1);
+            return 1;
+    }
+
+    return 0;
+}
 
 int main(void)
 {	
   gpio_mode_input_pullup(&DDRD, 2);
   gpio_mode_input_pullup(&DDRD, 3);
   gpio_mode_input_pullup(&DDRD, 4);
-
-  /*USART*/
-  /*USART0_Init();	
-  
-  if(!SI4703_Init())
-  {
-    memset(msg, 0, sizeof(msg));
-    sprintf(msg, "SI4703_Init failed.\r\n");
-    USART0_TxBuffer((uint8_t *)msg, strlen(msg));		
-  
-    while(1)
-    {
-      
-    }
-  }
-  else
-  {
-    memset(msg, 0, sizeof(msg));
-    sprintf(msg, "SI4703_Init succeeded.\r\n");
-    USART0_TxBuffer((uint8_t *)msg, strlen(msg));	
-  }*/
   
   SI4703_Init();
-  SI4703_SeekUp();
-  actFrequency = SI4703_GetFreq();
+  SI4703_SetFreq(CHANNEL1);
+  SI4703_SetVolume(volume);
+  //actFrequency = SI4703_GetFreq();
+  actFrequency = CHANNEL1;
 
-  if (zkouska12 == 1){ // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx vvvvvvv
-    // --- Výstup PB0 (LED) ---
-    gpio_mode_output(&DDRB, PB5);
-  } // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ^^^^^^^
+  gpio_mode_output(&DDRB, PB5);
 
   oldD = PIND;   // uložit počáteční stav portu D
 
@@ -99,8 +144,22 @@ int main(void)
           | (1 << PCINT20);    // PD4
 
   sei(); // globální povolení přerušení
-  
-  
+
+/* Display init */
+
+  /* 3-wire SPI constructor */
+  u8g2_Setup_ssd1306_128x64_noname_f( &u8g2, U8G2_R0, u8x8_byte_3wire_sw_spi /* bit-banged 3-wire SPI*/, gpio_cb /* GPIO + delay callback*/);
+
+  u8g2_InitDisplay(&u8g2);
+  u8g2_SetPowerSave(&u8g2, 0);
+  u8g2_SetContrast(&u8g2, 150);
+
+  u8g2_ClearBuffer(&u8g2);
+  u8g2_SetFont(&u8g2, u8g2_font_courB12_tf);
+  u8g2_DrawStr(&u8g2, 10, 10, "Frequency:"); // 25,40
+  u8g2_DrawStr(&u8g2, 10, 40, "99,5"); // 25,40
+  u8g2_SendBuffer(&u8g2);
+
   while (1) 
   {
     if (buttonPD2isPressed == 1 || buttonPD3isPressed == 1) { 
@@ -171,15 +230,29 @@ ISR(PCINT2_vect)
   }
 
 
-  // PD4 (PCINT20) - funkce seek - najde nejbližší stanici na vyšší frekvenci
+  // PD4 (PCINT20)
   if ((newD & (1 << PD4)) == 0 && (oldD & (1 << PD4)) != 0) {
-      
-    if (zkouska12 == 1) { // xxxxxxxxxxxxxxxxxxxxxx vvvvvvvvvvvvv
-      gpio_toggle(&PORTB, PB5);
-    } else { // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ^^^^^^^^^^^^^
-      SI4703_SeekUp();
-    } // xxxxxxxxxxxxxxxxxxxxxxxxx
-        
+
+    gpio_toggle(&PORTB, PB5);
+
+    SI4703_SeekUp();
+    actFrequency = SI4703_GetFreq();
+
+    char buf[16];
+    dtostrf(actFrequency, 5, 1, buf);
+
+    u8g2_ClearBuffer(&u8g2);
+    u8g2_SetFont(&u8g2, u8g2_font_courB12_tf);
+    u8g2_DrawStr(&u8g2, 10, 10, "Frequency:");
+    u8g2_DrawStr(&u8g2, 10, 40, buf);
+    u8g2_SendBuffer(&u8g2);
+
+    /*Other option: Redraw with color box*/
+    /*
+    u8g2_SetDrawColor(&u8g2, 0);           // set color to black
+    u8g2_DrawBox(&u8g2, 10, 28, 60, 16);   // erase freq area
+    u8g2_SetDrawColor(&u8g2, 1);           // set color to white
+    */
   }
   oldD = newD;
 }
