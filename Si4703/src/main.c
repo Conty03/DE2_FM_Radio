@@ -214,13 +214,17 @@ ISR(PCINT2_vect)
     }
   }
 
-  // PD3 (PCINT18) uvolnění
-  if ((newD & (1 << PD3)) != 0 && (oldD & (1 << PD3)) == 0) {
-      
-      buttonPD3isPressed = 0;
-      buttonPressedLong = 0;
-      buttonPressedLong2 = 0;
-  }
+  // PD2 a PD3 (PCINT18) uvolnění
+   if (((newD & (1 << PD3)) != 0 && (oldD & (1 << PD3)) == 0) || ((newD & (1 << PD2)) != 0 && (oldD & (1 << PD2)) == 0)) {
+       
+       buttonPD2isPressed = 0;
+       buttonPD3isPressed = 0;
+       buttonPressedLong = 0;
+       buttonPressedLong2 = 0;
+       initTime = 0;
+       fastTime = 0;
+
+   }
 
 
   // PD4 (PCINT20) - funkce seek - najde nejbližší stanici na vyšší frekvenci
