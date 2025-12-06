@@ -95,3 +95,7 @@ uint8_t gpio_read(volatile uint8_t *reg, uint8_t pin)
 /*
  * Function: gpio_toggle()
  */
+ void gpio_toggle(volatile uint8_t *reg, uint8_t pin)
+{
+    *reg = *reg ^ (1<<pin);
+}

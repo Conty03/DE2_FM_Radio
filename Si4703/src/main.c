@@ -45,7 +45,7 @@ uint8_t buttonPD3isPressed = 0; //Je zmáčknuté tlačítko na pinu PD3
 uint8_t buttonPD4isPressed = 0; //Je zmáčknuté tlačítko na pinu PD4
 uint8_t buttonPressedLong = 0; // tlačítko už je zmáčknuté určitou dobu
 uint8_t buttonPressedLong2 = 0; // tlačítko už je zmáčknuté určitou delší dobu
-uint8_t zkouska12 = 1; // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx potom smazat
+uint8_t zkouska12 = 2; // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx potom smazat
 
 uint8_t volume = 8;
 
@@ -81,7 +81,7 @@ int main(void)
   
   SI4703_Init();
   SI4703_SeekUp();
-  actFrequency = SI4703_GetFrequency();
+  actFrequency = SI4703_GetFreq();
 
   if (zkouska12 == 1){ // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx vvvvvvv
     // --- Výstup PB0 (LED) ---
@@ -174,7 +174,7 @@ ISR(PCINT2_vect)
   // PD4 (PCINT20) - funkce seek - najde nejbližší stanici na vyšší frekvenci
   if ((newD & (1 << PD4)) == 0 && (oldD & (1 << PD4)) != 0) {
       
-    if (zkouska12 = 1) { // xxxxxxxxxxxxxxxxxxxxxx vvvvvvvvvvvvv
+    if (zkouska12 == 1) { // xxxxxxxxxxxxxxxxxxxxxx vvvvvvvvvvvvv
       gpio_toggle(&PORTB, PB5);
     } else { // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ^^^^^^^^^^^^^
       SI4703_SeekUp();

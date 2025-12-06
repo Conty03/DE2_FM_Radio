@@ -76,7 +76,7 @@ uint8_t gpio_read(volatile uint8_t *reg, uint8_t pin);
 // void gpio_mode_input_nopull(volatile uint8_t *reg, uint8_t pin);
 
 
-// void gpio_toggle(volatile uint8_t *reg, uint8_t pin);
+void gpio_toggle(volatile uint8_t *reg, uint8_t pin);
 
 
 /** @} */
