@@ -181,19 +181,16 @@ ISR(PCINT2_vect)
   // PD2 (PCINT18) stisknutí - zvýší frekvenci o 100 (krátký i dlouhý stisk)
   if ((newD & (1 << PD2)) == 0 && (oldD & (1 << PD2)) != 0) {
         
-    if (zkouska12 == 1) { // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx vvvvvvvvvvvv
-
-      gpio_toggle(&PORTB, PB5);
     
-    } else {
-
-      actFrequency += 0.1;
-      SI4703_SetFreq(actFrequency);
-    } // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ^^^^^^^^^^
-
-      if (buttonPD3isPressed != 1) {
-      buttonPD2isPressed = 1;
-      }
+     gpio_toggle(&PORTB, PB5);
+    
+    
+     actFrequency += 0.1;
+     SI4703_SetFreq(actFrequency);
+    
+     if (buttonPD3isPressed != 1) {
+     buttonPD2isPressed = 1;
+     }
    }
  
    // PD3 (PCINT19) stisknutí - sníží frekvenci o 100 (krátký i dlouhý stisk)
@@ -259,14 +256,10 @@ ISR(PCINT2_vect)
 
 ISR(TIMER1_OVF_vect)
 {
-  if (zkouska12 != 1) { // xxxxxxxxxxxxxxxxxxxx
-    actFrequency = SI4703_GetFreq();
-  } // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
   if (buttonPressedLong == 0 && buttonPressedLong2 == 0) { // krátký stisk - jdenorázová změna frekvence o 100
-    if (initTime > 20) {
-      buttonPressedLong = 1;
 
+     /*
       if (zkouska12 == 1) { // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx vvvvvvvvvvvv
   
         gpio_toggle(&PORTB, PB5);
@@ -281,13 +274,8 @@ ISR(TIMER1_OVF_vect)
 
         SI4703_SetFreq(actFrequency);
       } // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ^^^^^^^^^^
+     */
 
-      fastTime = 0;
-    } else {
-      fastTime++;
-    }
-
-    
     if (initTime > 20) {
        buttonPressedLong = 1;
        initTime = 0;
