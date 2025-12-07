@@ -31,7 +31,7 @@
 // -- Defines --------------------------------------------------------
 /**
  * @name  Definitions for 16-bit Timer/Counter1
- * @note  t_OVF = 1/F_CPU * prescaler * 2^n where n = 16, F_CPU = 16 MHz
+ * @note  t_OVF = 1/F_CPU * prescaler * 2^n where n = 16, F_CPU = 8 MHz
  */
 /** @brief Stop timer, prescaler 000 --> STOP */
 #define tim1_stop() TCCR1B &= ~((1<<CS12) | (1<<CS11) | (1<<CS10));
@@ -60,7 +60,7 @@
 
 /**
  * @name  Definitions for 8-bit Timer/Counter0
- * @note  t_OVF = 1/F_CPU * prescaler * 2^n where n = 8, F_CPU = 16 MHz
+ * @note  t_OVF = 1/F_CPU * prescaler * 2^n where n = 8, F_CPU = 8 MHz
  */
 /** @brief Stop timer, prescaler 000 --> STOP */
 #define tim0_stop() TCCR0B &= ~((1<<CS02) | (1<<CS01) | (1<<CS00));
@@ -89,7 +89,7 @@
 
 /**
  * @name  Definitions for 8-bit Timer/Counter2
- * @note  t_OVF = 1/F_CPU * prescaler * 2^n where n = 8, F_CPU = 16 MHz
+ * @note  t_OVF = 1/F_CPU * prescaler * 2^n where n = 8, F_CPU = 8 MHz
  */
 /** @brief Stop timer, prescaler 000 --> STOP */
 #define tim2_stop() TCCR2B &= ~((1<<CS22) | (1<<CS21) | (1<<CS20));

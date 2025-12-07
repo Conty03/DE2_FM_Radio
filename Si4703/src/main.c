@@ -46,8 +46,8 @@ uint8_t buttonPD4isPressed = 0;
 uint8_t buttonPressedLong = 0;
 uint8_t buttonPressedLong2 = 0;
 
-volatile uint8_t initTime = 0;   // timer read counter for long press detection
-volatile uint8_t fastTime = 0;   // timer read counter for fast frequency change
+volatile uint8_t initTime = 0;   // number of Timer1 overflows
+volatile uint8_t fastTime = 0;   // number of Timer1 overflows within long press mode
 volatile uint8_t oldD;
 
 uint8_t volume = 8;
@@ -122,10 +122,11 @@ int main(void)
   gpio_mode_output(&DDRB, PB5);      // LED
   
   SI4703_Init();
-  SI4703_SetFreq(CHANNEL1);
-  SI4703_SetVolume(volume);
+  SI4703_SeekUp();
+  //SI4703_SetFreq(CHANNEL1);
+  //SI4703_SetVolume(volume);
   //actFrequency = SI4703_GetFreq();
-  actFrequency = CHANNEL1;
+  //actFrequency = CHANNEL1;
 
   oldD = PIND;    // save initial state of port D
 
@@ -136,7 +137,7 @@ int main(void)
   PCMSK2  |= (1 << PCINT18) | (1 << PCINT19) | (1 << PCINT20);   
 
   /* Enable global interrupts */
-  sei(); 
+  sei();
 
   /* 3-wire SPI constructor */
   u8g2_Setup_ssd1306_128x64_noname_f( &u8g2, U8G2_R0, u8x8_byte_3wire_sw_spi, gpio_cb);
@@ -156,19 +157,20 @@ int main(void)
     /* If Up or Down button is pressed, timer is started (including long press detection) */
     if (buttonPD2isPressed == 1 || buttonPD3isPressed == 1) { 
       tim1_ovf_33ms();
-      tim1_ovf_enable();
-    } else{
+      tim1_ovf_enable();    // enable Timer1 overflow interrupt
+    } else {
       tim1_ovf_disable();
       tim1_stop();
     }
   }
 }
  
+/* Interrupt service routine PORTD */
 ISR(PCINT2_vect)
 {    
-  uint8_t newD = PIND;   // čteme celý port D
+  uint8_t newD = PIND;   // update current state of port D
 
-  // PD2 (PCINT18) stisknutí - zvýší frekvenci o 100 (krátký i dlouhý stisk)
+  // PD2 (PCINT18) pressed - increases frequency by 100 kHz (short and long press)
   if ((newD & (1 << PD2)) == 0 && (oldD & (1 << PD2)) != 0) {
 
     gpio_toggle(&PORTB, PB5);
@@ -176,12 +178,12 @@ ISR(PCINT2_vect)
     actFrequency += 0.1;
     SI4703_SetFreq(actFrequency);
 
-    if (buttonPD3isPressed != 1) {
+    if (buttonPD3isPressed != 1) {    // prevent conflict when both buttons are pressed
     buttonPD2isPressed = 1;
     }
-   }
+  }
  
-   // PD3 (PCINT19) stisknutí - sníží frekvenci o 100 (krátký i dlouhý stisk)
+   // PD3 (PCINT19) pressed - decreases frequency by 100 kHz (short and long press)
    if ((newD & (1 << PD3)) == 0 && (oldD & (1 << PD3)) != 0) {
     
     gpio_toggle(&PORTB, PB5);
@@ -194,25 +196,26 @@ ISR(PCINT2_vect)
     }
   }
 
-  // PD2 a PD3 (PCINT18) uvolnění
-   if (((newD & (1 << PD3)) != 0 && (oldD & (1 << PD3)) == 0) || ((newD & (1 << PD2)) != 0 && (oldD & (1 << PD2)) == 0)) {
+  // PD2 and PD3 released
+  if (((newD & (1 << PD3)) != 0 && (oldD & (1 << PD3)) == 0) || ((newD & (1 << PD2)) != 0 && (oldD & (1 << PD2)) == 0)) {
        
-       buttonPD2isPressed = 0;
-       buttonPD3isPressed = 0;
-       buttonPressedLong = 0;
-       buttonPressedLong2 = 0;
-       initTime = 0;
-       fastTime = 0;
+    buttonPD2isPressed = 0;
+    buttonPD3isPressed = 0;
+    buttonPressedLong = 0;
+    buttonPressedLong2 = 0;
+    initTime = 0;
+    fastTime = 0;
+  }
 
-   }
 
-
-  // PD4 (PCINT20) - funkce seek - najde nejbližší stanici na vyšší frekvenci
+  // PD4 (PCINT20) - function seek up
   if ((newD & (1 << PD4)) == 0 && (oldD & (1 << PD4)) != 0) {
       
     gpio_toggle(&PORTB, PB5);
 
     SI4703_SeekUp();
+
+    /*
     actFrequency = SI4703_GetFreq();
 
     char buf[16];
@@ -223,7 +226,7 @@ ISR(PCINT2_vect)
     u8g2_DrawStr(&u8g2, 10, 10, "Frequency:");
     u8g2_DrawStr(&u8g2, 10, 40, buf);
     u8g2_SendBuffer(&u8g2);
-
+    */
     /*Other option:*/
     /*
     u8g2_SetDrawColor(&u8g2, 0);           // black color
@@ -234,66 +237,51 @@ ISR(PCINT2_vect)
     u8g2_SendBuffer(&u8g2); 
     */    
   }
+
   oldD = newD;
 }
-
+/* Interrupt service routine TIMER1 overflow */
 ISR(TIMER1_OVF_vect)
 {
+  if (buttonPressedLong == 0 && buttonPressedLong2 == 0) {    // button pressed shortly - frequency step: 100 kHz
 
-  if (buttonPressedLong == 0 && buttonPressedLong2 == 0) { // krátký stisk - jdenorázová změna frekvence o 100
+    if (initTime > 20) {    // after 21 overflows (approx. 660 ms)
+      buttonPressedLong = 1;
+      initTime = 0;
 
-     /*
-      if (zkouska12 == 1) { // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx vvvvvvvvvvvv
-  
-        gpio_toggle(&PORTB, PB5);
-      
-      } else {
-
-      if (buttonPD2isPressed == 1) {
-        actFrequency += 0.1;
-      } else if (buttonPD3isPressed == 1) {
-        actFrequency -= 0.1;
-      } 
-
-        SI4703_SetFreq(actFrequency);
-      } // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ^^^^^^^^^^
-     */
-
-    if (initTime > 20) {
-       buttonPressedLong = 1;
-       initTime = 0;
-     } else {
-         initTime++;
-     }
+    } else {
+      initTime++;
+    }
  
-  } else if (buttonPressedLong == 1 && buttonPressedLong2 == 0){ // dlouhý stisk - frekvence skáče v pravidelných intervalech nahoru/dolů
+  } else if (buttonPressedLong == 1 && buttonPressedLong2 == 0){    // button still pressed - slow frequency change
      
-    if (initTime > 6) {
+    if (initTime > 6) {   // after every 7th overflow (approx. 200 ms)
 
       gpio_toggle(&PORTB, PB5);
 
-      if (buttonPD2isPressed == 1) {
+      if (buttonPD2isPressed == 1) { // podmínka rovna nule? (pull-up) log. 1 je 0
         actFrequency += 0.1;
+
       } else if (buttonPD3isPressed == 1) {
         actFrequency -= 0.1;
       } 
 
       SI4703_SetFreq(actFrequency);
+      initTime = 0;
+ 
+      if (fastTime > 6) {   // after maxInitTime * maxFastTime overflows of timer1
+        buttonPressedLong2 = 1;
+        fastTime = 0;
 
-       initTime = 0;
+      } else {
+        fastTime++;
+      }
  
-       if (fastTime > 6) {
-           buttonPressedLong2 = 1;
-           fastTime = 0;
-       } else {
-           fastTime++;
-       }
+    } else {
+      initTime++;
+    }
  
-     } else {
-        initTime++;
-     }
- 
-  } else if (buttonPressedLong == 1 && buttonPressedLong2 == 1){ // nejdelší stisk - změna frekvence zrychlí
+  } else if (buttonPressedLong == 1 && buttonPressedLong2 == 1) {   // long press mode - fast frequency change
      
     if (initTime > 2) {
  
@@ -306,7 +294,6 @@ ISR(TIMER1_OVF_vect)
         } 
  
       SI4703_SetFreq(actFrequency);
- 
       initTime = 0;
  
     } else {
@@ -314,10 +301,9 @@ ISR(TIMER1_OVF_vect)
     }
 
   } else {
-       buttonPressedLong = 0;
-       buttonPressedLong2 = 0;
-       initTime = 0;
-       fastTime = 0;
+    buttonPressedLong = 0;
+    buttonPressedLong2 = 0;
+    initTime = 0;
+    fastTime = 0;
   }
- 
 }
