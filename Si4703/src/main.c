@@ -194,13 +194,17 @@ ISR(PCINT2_vect)
     }
   }
 
-  // PD3 (PCINT18) uvolnění
-  if ((newD & (1 << PD3)) != 0 && (oldD & (1 << PD3)) == 0) {
-      
-    buttonPD3isPressed = 0;
-    buttonPressedLong = 0;
-    buttonPressedLong2 = 0;
-  }
+  // PD2 a PD3 (PCINT18) uvolnění
+   if (((newD & (1 << PD3)) != 0 && (oldD & (1 << PD3)) == 0) || ((newD & (1 << PD2)) != 0 && (oldD & (1 << PD2)) == 0)) {
+       
+       buttonPD2isPressed = 0;
+       buttonPD3isPressed = 0;
+       buttonPressedLong = 0;
+       buttonPressedLong2 = 0;
+       initTime = 0;
+       fastTime = 0;
+
+   }
 
 
   // PD4 (PCINT20) - funkce seek - najde nejbližší stanici na vyšší frekvenci
@@ -235,13 +239,15 @@ ISR(PCINT2_vect)
 
 ISR(TIMER1_OVF_vect)
 {
-  actFrequency = SI4703_GetFreq();
 
   if (buttonPressedLong == 0 && buttonPressedLong2 == 0) { // krátký stisk - jdenorázová změna frekvence o 100
-    if (initTime > 20) {
 
-      buttonPressedLong = 1;
-      gpio_toggle(&PORTB, PB5);
+     /*
+      if (zkouska12 == 1) { // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx vvvvvvvvvvvv
+  
+        gpio_toggle(&PORTB, PB5);
+      
+      } else {
 
       if (buttonPD2isPressed == 1) {
         actFrequency += 0.1;
@@ -249,14 +255,10 @@ ISR(TIMER1_OVF_vect)
         actFrequency -= 0.1;
       } 
 
-      SI4703_SetFreq(actFrequency);
+        SI4703_SetFreq(actFrequency);
+      } // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ^^^^^^^^^^
+     */
 
-      fastTime = 0;
-    } else {
-      fastTime++;
-    }
-
-    
     if (initTime > 20) {
        buttonPressedLong = 1;
        initTime = 0;
