@@ -20,18 +20,7 @@
 #include "timer.h"
 #include <u8g2.h>
 
-#define CHANNEL1	99.5  // Evropa2
-#define CHANNEL2	105.5 // Evropa2 (Brno)
-
-/*Buttons*/
-#define DDR		DDRD
-#define PORT	PORTD
-#define PIN		PIND
-#define D2		PD2		// Up
-#define D3		PD3 	// Down
-#define D4		PD4 	// Seek
-
-/*Display*/
+/* Display pinout */
 #define PIN_SCK   PB5
 #define PIN_MOSI  PB3
 #define PIN_CS    PB2
@@ -39,10 +28,15 @@
 
 u8g2_t u8g2;
 
-float actFrequency;
+float actFreq;
+/* 3 stages of changing frequency */
+uint8_t stepFreq = 1;
+uint8_t slowFreq = 0;
+uint8_t fastFreq = 0;
+
 uint8_t buttonPD2isPressed = 0; 
 uint8_t buttonPD3isPressed = 0;
-uint8_t buttonPD4isPressed = 0; 
+uint8_t buttonPD4isPressed = 0;
 uint8_t buttonPressedLong = 0;
 uint8_t buttonPressedLong2 = 0;
 
@@ -120,15 +114,12 @@ int main(void)
   gpio_mode_input_pullup(&DDRD, 3);  // Down
   gpio_mode_input_pullup(&DDRD, 4);  // Seek
   gpio_mode_output(&DDRB, PB5);      // LED
-  
-  SI4703_Init();
-  SI4703_SeekUp();
-  //SI4703_SetFreq(CHANNEL1);
-  //SI4703_SetVolume(volume);
-  //actFrequency = SI4703_GetFreq();
-  //actFrequency = CHANNEL1;
-
   oldD = PIND;    // save initial state of port D
+
+  SI4703_Init();
+  SI4703_SetVolume(volume);  
+  SI4703_SeekUp();
+  actFreq = SI4703_GetFreq();
 
   /* Enable PCINT2 */
   PCICR |= (1 << PCIE2);
@@ -154,13 +145,38 @@ int main(void)
 
   while (1) 
   {
-    /* If Up or Down button is pressed, timer is started (including long press detection) */
-    if (buttonPD2isPressed == 1 || buttonPD3isPressed == 1) { 
-      tim1_ovf_33ms();
-      tim1_ovf_enable();    // enable Timer1 overflow interrupt
+    if ((buttonPD2isPressed == 1) || (buttonPD3isPressed == 1)) {
+
+      if ((stepFreq == 1) || (slowFreq == 1) || (fastFreq == 1)) {
+        gpio_toggle(&PORTB, PB5);
+
+        if (buttonPD2isPressed == 1)
+          actFreq += 0.1;
+        else
+          actFreq -= 0.1;
+
+        SI4703_SetFreq(actFreq);
+
+        stepFreq = 0;
+        slowFreq = 0;
+        fastFreq = 0;
+      }
+
+      tim1_ovf_33ms();      // set (start) Timer1 overflow interrupt
+      tim1_ovf_enable();    // enable Timer1 overflow interrupt      
+
+    } else if (buttonPD4isPressed == 1) {
+      
+      gpio_toggle(&PORTB, PB5);
+      SI4703_SeekUp();
+
     } else {
       tim1_ovf_disable();
       tim1_stop();
+      TCNT1 = 0;    // reset timer NOT SURE
+
+      initTime = 0;
+      fastTime = 0;
     }
   }
 }
@@ -170,56 +186,35 @@ ISR(PCINT2_vect)
 {    
   uint8_t newD = PIND;   // update current state of port D
 
-  // PD2 (PCINT18) pressed - increases frequency by 100 kHz (short and long press)
-  if ((newD & (1 << PD2)) == 0 && (oldD & (1 << PD2)) != 0) {
-
-    gpio_toggle(&PORTB, PB5);
-
-    actFrequency += 0.1;
-    SI4703_SetFreq(actFrequency);
+  // PD2 (PCINT18) pressed - increase frequency by 100 kHz (short and long press)
+  if ((newD & (1 << PD2)) == 0 &&
+      (oldD & (1 << PD2)) != 0) {   // falling edge detecction (pull-up)  1 \___ 0
 
     if (buttonPD3isPressed != 1) {    // prevent conflict when both buttons are pressed
     buttonPD2isPressed = 1;
     }
   }
  
-   // PD3 (PCINT19) pressed - decreases frequency by 100 kHz (short and long press)
-   if ((newD & (1 << PD3)) == 0 && (oldD & (1 << PD3)) != 0) {
-    
-    gpio_toggle(&PORTB, PB5);
-
-    actFrequency += 0.1;
-    SI4703_SetFreq(actFrequency);
+  // PD3 (PCINT19) pressed - decrease frequency by 100 kHz (short and long press)
+  if ((newD & (1 << PD3)) == 0 &&
+      (oldD & (1 << PD3)) != 0) {
 
     if (buttonPD2isPressed != 1) {
       buttonPD3isPressed = 1;
     }
   }
 
-  // PD2 and PD3 released
-  if (((newD & (1 << PD3)) != 0 && (oldD & (1 << PD3)) == 0) || ((newD & (1 << PD2)) != 0 && (oldD & (1 << PD2)) == 0)) {
-       
-    buttonPD2isPressed = 0;
-    buttonPD3isPressed = 0;
-    buttonPressedLong = 0;
-    buttonPressedLong2 = 0;
-    initTime = 0;
-    fastTime = 0;
-  }
+  // PD4 (PCINT20) pressed - seek up function
+  if ((newD & (1 << PD4)) == 0 &&
+      (oldD & (1 << PD4)) != 0) {
 
-
-  // PD4 (PCINT20) - function seek up
-  if ((newD & (1 << PD4)) == 0 && (oldD & (1 << PD4)) != 0) {
-      
-    gpio_toggle(&PORTB, PB5);
-
-    SI4703_SeekUp();
+    buttonPD4isPressed = 1;
 
     /*
-    actFrequency = SI4703_GetFreq();
+    actFreq = SI4703_GetFreq();
 
     char buf[16];
-    dtostrf(actFrequency, 5, 1, buf);
+    dtostrf(actFreq, 5, 1, buf);
 
     u8g2_ClearBuffer(&u8g2);
     u8g2_SetFont(&u8g2, u8g2_font_courB12_tf);
@@ -238,12 +233,33 @@ ISR(PCINT2_vect)
     */    
   }
 
+  // PDx release
+  if (((newD & (1 << PD2)) != 0 && (oldD & (1 << PD2)) == 0) ||   // rising edge detection 0 ___/ 1
+      ((newD & (1 << PD3)) != 0 && (oldD & (1 << PD3)) == 0) ||
+      ((newD & (1 << PD4)) != 0 && (oldD & (1 << PD4)) == 0)) {
+
+    buttonPD2isPressed = 0;
+    buttonPD3isPressed = 0;
+    buttonPD4isPressed = 0;
+
+    buttonPressedLong = 0;
+    buttonPressedLong2 = 0;
+
+    initTime = 0;
+    fastTime = 0;
+
+    stepFreq = 1;
+    slowFreq = 0;
+    fastFreq = 0;
+  }
+
   oldD = newD;
 }
+
 /* Interrupt service routine TIMER1 overflow */
 ISR(TIMER1_OVF_vect)
 {
-  if (buttonPressedLong == 0 && buttonPressedLong2 == 0) {    // button pressed shortly - frequency step: 100 kHz
+  if (buttonPressedLong == 0 && buttonPressedLong2 == 0) {    // button pressed shortly - no frequency change yet
 
     if (initTime > 20) {    // after 21 overflows (approx. 660 ms)
       buttonPressedLong = 1;
@@ -254,19 +270,9 @@ ISR(TIMER1_OVF_vect)
     }
  
   } else if (buttonPressedLong == 1 && buttonPressedLong2 == 0){    // button still pressed - slow frequency change
-     
+    
     if (initTime > 6) {   // after every 7th overflow (approx. 200 ms)
-
-      gpio_toggle(&PORTB, PB5);
-
-      if (buttonPD2isPressed == 1) { // podmínka rovna nule? (pull-up) log. 1 je 0
-        actFrequency += 0.1;
-
-      } else if (buttonPD3isPressed == 1) {
-        actFrequency -= 0.1;
-      } 
-
-      SI4703_SetFreq(actFrequency);
+      slowFreq = 1;
       initTime = 0;
  
       if (fastTime > 6) {   // after maxInitTime * maxFastTime overflows of timer1
@@ -284,16 +290,7 @@ ISR(TIMER1_OVF_vect)
   } else if (buttonPressedLong == 1 && buttonPressedLong2 == 1) {   // long press mode - fast frequency change
      
     if (initTime > 2) {
- 
-      gpio_toggle(&PORTB, PB5);
- 
-      if (buttonPD2isPressed == 1) {
-          actFrequency += 0.1;
-        } else if (buttonPD3isPressed == 1) {
-          actFrequency -= 0.1;
-        } 
- 
-      SI4703_SetFreq(actFrequency);
+      fastFreq = 1;
       initTime = 0;
  
     } else {
@@ -303,6 +300,7 @@ ISR(TIMER1_OVF_vect)
   } else {
     buttonPressedLong = 0;
     buttonPressedLong2 = 0;
+
     initTime = 0;
     fastTime = 0;
   }
