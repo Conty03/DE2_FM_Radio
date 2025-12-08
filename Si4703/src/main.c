@@ -33,12 +33,14 @@ float actFreq;
 uint8_t stepFreq = 1;
 uint8_t slowFreq = 0;
 uint8_t fastFreq = 0;
+uint8_t seekDone = 0;
 
 uint8_t buttonPD2isPressed = 0; 
 uint8_t buttonPD3isPressed = 0;
 uint8_t buttonPD4isPressed = 0;
 uint8_t buttonPressedLong = 0;
 uint8_t buttonPressedLong2 = 0;
+uint8_t buttonReleased = 0;
 
 volatile uint8_t initTime = 0;   // number of Timer1 overflows
 volatile uint8_t fastTime = 0;   // number of Timer1 overflows within long press mode
@@ -162,15 +164,23 @@ int main(void)
         fastFreq = 0;
       }
 
+      // Displej
+
       tim1_ovf_33ms();      // set (start) Timer1 overflow interrupt
       tim1_ovf_enable();    // enable Timer1 overflow interrupt      
 
     } else if (buttonPD4isPressed == 1) {
       
       gpio_toggle(&PORTB, PB5);
-      SI4703_SeekUp();
+      if (seekDone == 0) {
+        seekDone = 1;
+        SI4703_SeekUp();
+        actFreq = SI4703_GetFreq();
+      }
+      // Displej
 
-    } else {
+    } else if (buttonReleased == 1){
+      buttonReleased = 0;
       tim1_ovf_disable();
       tim1_stop();
       TCNT1 = 0;    // reset timer NOT SURE
@@ -241,6 +251,7 @@ ISR(PCINT2_vect)
     buttonPD2isPressed = 0;
     buttonPD3isPressed = 0;
     buttonPD4isPressed = 0;
+    buttonReleased = 1;
 
     buttonPressedLong = 0;
     buttonPressedLong2 = 0;
@@ -251,6 +262,7 @@ ISR(PCINT2_vect)
     stepFreq = 1;
     slowFreq = 0;
     fastFreq = 0;
+    seekDone = 0;
   }
 
   oldD = newD;
