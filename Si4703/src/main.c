@@ -29,24 +29,24 @@
 u8g2_t u8g2;
 
 float actFreq;
-/* 3 stages of changing frequency */
-uint8_t stepFreq = 1;
-uint8_t slowFreq = 0;
-uint8_t fastFreq = 0;
-uint8_t seekDone = 0;
+uint8_t volume = 5;
 
-uint8_t buttonPD2isPressed = 0; 
-uint8_t buttonPD3isPressed = 0;
-uint8_t buttonPD4isPressed = 0;
-uint8_t buttonPressedLong = 0;
-uint8_t buttonPressedLong2 = 0;
-uint8_t buttonReleased = 0;
+/* 3 stages of changing frequency */
+volatile uint8_t stepFreq = 1;
+volatile uint8_t slowFreq = 0;
+volatile uint8_t fastFreq = 0;
+volatile uint8_t seekFreq = 1;
+
+volatile uint8_t buttonPD2isPressed = 0; 
+volatile uint8_t buttonPD3isPressed = 0;
+volatile uint8_t buttonPD4isPressed = 0;
+volatile uint8_t buttonPressedLong = 0;
+volatile uint8_t buttonPressedLong2 = 0;
+volatile uint8_t buttonReleased = 0;
 
 volatile uint8_t initTime = 0;   // number of Timer1 overflows
 volatile uint8_t fastTime = 0;   // number of Timer1 overflows within long press mode
 volatile uint8_t oldD;
-
-uint8_t volume = 8;
 
 /* GPIO + delay callback for u8g2 */
 static uint8_t gpio_cb(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
@@ -110,12 +110,30 @@ static uint8_t gpio_cb(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr
   return 0;
 }
 
+/* Update display */
+void displayUpdateFreq(float freq)
+{
+  char buf[16];
+  dtostrf(freq, 5, 1, buf);
+
+  /* clear old number */
+  u8g2_SetDrawColor(&u8g2, 0);  // set color: black 
+  u8g2_DrawBox(&u8g2, 10, 28, 60, 16);
+  u8g2_SetDrawColor(&u8g2, 1);  // set color: white
+
+  /* draw new number */
+  u8g2_SetFont(&u8g2, u8g2_font_courB12_tf);
+  u8g2_DrawStr(&u8g2, 10, 40, buf);
+
+  u8g2_SendBuffer(&u8g2);
+}
+
 int main(void)
 {	
   gpio_mode_input_pullup(&DDRD, 2);  // Up
   gpio_mode_input_pullup(&DDRD, 3);  // Down
   gpio_mode_input_pullup(&DDRD, 4);  // Seek
-  gpio_mode_output(&DDRB, PB5);      // LED
+  gpio_mode_output(&DDRD, PD6);      // LED
   oldD = PIND;    // save initial state of port D
 
   SI4703_Init();
@@ -135,51 +153,59 @@ int main(void)
   /* 3-wire SPI constructor */
   u8g2_Setup_ssd1306_128x64_noname_f( &u8g2, U8G2_R0, u8x8_byte_3wire_sw_spi, gpio_cb);
 
-  u8g2_InitDisplay(&u8g2);
+  u8g2_InitDisplay(&u8g2); 
   u8g2_SetPowerSave(&u8g2, 0);    // switch off power save mode
   u8g2_SetContrast(&u8g2, 150);   // <0; 255>
 
+  /* Display UI */
   u8g2_ClearBuffer(&u8g2);
   u8g2_SetFont(&u8g2, u8g2_font_courB12_tf);
-  u8g2_DrawStr(&u8g2, 10, 10, "Frequency:");
-  u8g2_DrawStr(&u8g2, 10, 40, "99,5");
+  u8g2_DrawStr(&u8g2, 10, 20, "Frequency:");
   u8g2_SendBuffer(&u8g2);
+  displayUpdateFreq(actFreq);
 
   while (1) 
   {
+    /* Up/Down buttons increase or decrease frequency by 100 kHz, if pressed for longer time frequency changes automatically */
     if ((buttonPD2isPressed == 1) || (buttonPD3isPressed == 1)) {
 
       if ((stepFreq == 1) || (slowFreq == 1) || (fastFreq == 1)) {
-        gpio_toggle(&PORTB, PB5);
+        gpio_toggle(&PORTD, PD6);
 
         if (buttonPD2isPressed == 1)
           actFreq += 0.1;
         else
           actFreq -= 0.1;
 
+        if (actFreq > 108.0)
+          actFreq = 87.5;
+        else if (actFreq < 87.5)
+          actFreq = 108.0;
+        
         SI4703_SetFreq(actFreq);
+        displayUpdateFreq(actFreq);
 
         stepFreq = 0;
         slowFreq = 0;
         fastFreq = 0;
       }
 
-      // Displej
-
       tim1_ovf_33ms();      // set (start) Timer1 overflow interrupt
       tim1_ovf_enable();    // enable Timer1 overflow interrupt      
 
     } else if (buttonPD4isPressed == 1) {
       
-      gpio_toggle(&PORTB, PB5);
-      if (seekDone == 0) {
-        seekDone = 1;
-        SI4703_SeekUp();
-        actFreq = SI4703_GetFreq();
-      }
-      // Displej
+      if (seekFreq == 1) {
 
-    } else if (buttonReleased == 1){
+        gpio_toggle(&PORTD, PD6);
+        seekFreq = 0;
+        SI4703_SeekUp();
+
+        actFreq = SI4703_GetFreq();
+        displayUpdateFreq(actFreq);
+      }
+
+    } else if (buttonReleased == 1) {
       buttonReleased = 0;
       tim1_ovf_disable();
       tim1_stop();
@@ -219,28 +245,6 @@ ISR(PCINT2_vect)
       (oldD & (1 << PD4)) != 0) {
 
     buttonPD4isPressed = 1;
-
-    /*
-    actFreq = SI4703_GetFreq();
-
-    char buf[16];
-    dtostrf(actFreq, 5, 1, buf);
-
-    u8g2_ClearBuffer(&u8g2);
-    u8g2_SetFont(&u8g2, u8g2_font_courB12_tf);
-    u8g2_DrawStr(&u8g2, 10, 10, "Frequency:");
-    u8g2_DrawStr(&u8g2, 10, 40, buf);
-    u8g2_SendBuffer(&u8g2);
-    */
-    /*Other option:*/
-    /*
-    u8g2_SetDrawColor(&u8g2, 0);           // black color
-    u8g2_DrawBox(&u8g2, 10, 28, 60, 16);   // clear area
-    u8g2_SetDrawColor(&u8g2, 1);           // white color
-
-    u8g2_DrawStr(&u8g2, 10, 40, buf);
-    u8g2_SendBuffer(&u8g2); 
-    */    
   }
 
   // PDx release
@@ -262,7 +266,7 @@ ISR(PCINT2_vect)
     stepFreq = 1;
     slowFreq = 0;
     fastFreq = 0;
-    seekDone = 0;
+    seekFreq = 1;
   }
 
   oldD = newD;
