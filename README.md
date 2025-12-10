@@ -61,7 +61,7 @@ Bits 8 to 10 (SEEK, SEEKUP, SKMODE) are reserved for Seek function in Power conf
 
 In SEEKTH[7:0] you can set RSSI seek treshold.
 
-### Library U8g2 for SSD1306 display driver by [OLIKRAUS](https://github.com/olikraus/u8g2/tree/master/csrc)
+### Volume
 Despite using potentiometer as part of UI (User Interface) for controlling volume, it is neccessary to set an initial volume of Si4703.
 
 Volume can be controlled by VOLUME[3:0] bits in System configuration 2 register. Bit combination of "0000" stands for mute, which is also the default value, and combination of "1111" for maximum volume.  Volume scale is logarithmic.
@@ -69,7 +69,16 @@ Volume can be controlled by VOLUME[3:0] bits in System configuration 2 register.
 
 VOLEXT is 8th bit of the System congiguration 3 register and attenuates the output by 30dB if set to 1. Default value is 0, so in this program.
 
-### Functions from library 
+### Functions from library U8g2
+Functions from library U8g2 for SSD1306 display driver by [OLIKRAUS](https://github.com/olikraus/u8g2/tree/master/csrc):
+u8g2_InitDisplay() - initializes the display
+u8g2_SetPowerSave() - turns on/off power save mode (1 = on, 0 = off)
+u8g2_SetContrast() - sets the level of contrast (from 0 to 255)
+u8g2_ClearBuffer() - clears the screen
+u8g2_SetFont() - 
+u8g2_DrawStr()
+u8g2_SendBuffer()
+ 
 
 
 ## References
