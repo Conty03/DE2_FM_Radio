@@ -53,7 +53,6 @@ Init function initializes the Si4703. Main goal of initialization is to establis
 ### Mono
 Si4703 has 2 pins dedicated for an audio output (L + R) too enable both Mono and Stereo audio modes. Since stereo mode requires system of 2 speakers we force Si4703 to output only mono (both pins then output the same signal).
 
-
 ### Seek
 Searches (seeks) radio station according to the strength of RSSI (Received Signal Strenght Indicator). In other words if Seek function finds a station which fulfils a lower limit of the RSSI, the station is tuned. Seek function is devided into SI4703_SeekUp() and SI4703_SeekDown() function. We can adjust seeking by setting appropriate register.
 
@@ -68,6 +67,109 @@ Volume can be controlled by VOLUME[3:0] bits in System configuration 2 register.
 
 
 VOLEXT is 8th bit of the System congiguration 3 register and attenuates the output by 30dB if set to 1. Default value is 0, so in this program.
+
+## Documentation
+
+### gpio_cb
+Callback function used by U8g2 for software SPI communication. It handles pin toggling (CS, RESET, SCK, MOSI) and delays required by the software SPI protocol.  
+**Input:** `msg` (U8g2 request type), `arg_int` (pin state or delay), `arg_ptr` (unused)  
+**Output:** Returns `1` on success, otherwise `0`.
+
+### Debounce
+Implements a software debouncing algorithm to filter out mechanical noise (signal "bouncing") from button presses using Timer 0.
+**Input:** `pressedButton` (The current raw state of the button: `1` if pressed, `0` if released).  
+**Output:** Returns the stabilized button state (`1` = valid press, `0` = noise/invalid).
+
+### u8g2_Setup_ssd1306_128x64_noname_f
+Initializes the U8g2 structure for the SSD1306 128×64 OLED in **full buffer mode**. This requires 1024 bytes of RAM but allows faster execution for complex graphics.  
+**Input:** pointer to `u8g2`, rotation mode, byte-transfer function, GPIO callback  
+**Output:** none.
+
+### u8x8_byte_3wire_sw_spi
+Software implementation of 3-wire SPI used by U8g2 to send data bit-by-bit (Bit-banging) over GPIO pins.  
+**Input:** pointer to `u8x8`, message type, 8-bit argument, data pointer  
+**Output:** returns `1` on successful data transfer.
+
+### u8g2_InitDisplay
+Initializes the OLED controller hardware and sends startup configuration commands.  
+**Input:** pointer to `u8g2`  
+**Output:** none.
+
+### u8g2_SetPowerSave
+Enables or disables OLED power-save (sleep) mode. Used to turn the display on after initialization.  
+**Input:** pointer to `u8g2`, value `0` (active/on) or `1` (power-save/sleep)  
+**Output:** none.
+
+### u8g2_SetContrast
+Sets the display contrast level (brightness).  
+**Input:** pointer to `u8g2`, contrast value (0–255)  
+**Output:** none.
+
+### u8g2_ClearBuffer
+Clears all pixels in the internal frame buffer (RAM). This is typically called at the start of the display loop in full buffer mode to remove previous content.  
+**Input:** pointer to `u8g2`  
+**Output:** none.
+
+### u8g2_SendBuffer
+Transfers the entire content of the internal frame buffer (RAM) to the OLED display controller. In full buffer mode, this is called once after all drawing commands are finished.  
+**Input:** pointer to `u8g2`  
+**Output:** none.
+
+### u8g2_SetFont
+Selects the font used for subsequent text drawing operations.  
+**Input:** pointer to `u8g2`, pointer to font data (e.g., `u8g2_font_courB12_tf`)  
+**Output:** none.
+
+### u8g2_DrawStr
+Draws a text string at the specified X, Y coordinates within the current page.  
+**Input:** pointer to `u8g2`, x coordinate, y coordinate, C-string  
+**Output:** returns width of the string.
+
+### gpio_mode_output
+Configures a specific GPIO pin as an output (modifies DDR register).  
+**Input:** pointer to DDR register, bit index  
+**Output:** none.
+
+### gpio_write_high
+Sets the selected output pin to logic HIGH (modifies PORT register).  
+**Input:** pointer to PORT register, bit index  
+**Output:** none.
+
+### gpio_write_low
+Sets the selected output pin to logic LOW (modifies PORT register).  
+**Input:** pointer to PORT register, bit index  
+**Output:** none.
+
+### gpio_toggle
+Inverts the state of the specified GPIO pin (toggles between HIGH and LOW).  
+**Input:** pointer to PORT register, bit index  
+**Output:** none.
+
+### SI4703_Init
+Initializes the Si4703 FM tuner module via I2C.  
+**Input:** none  
+**Output:** none.
+
+### SI4703_SetVolume
+Sets the volume level of the FM tuner.  
+**Input:** volume level (0-15)  
+**Output:** none.
+
+### SI4703_SetFreq
+Tunes the FM receiver to a specific frequency.  
+**Input:** frequency value (float, e.g., 101.5)  
+**Output:** none.
+
+### SI4703_SeekUp
+Starts an automatic seek operation to find the next available station with good signal quality.  
+**Input:** none  
+**Output:** none.
+
+### SI4703_GetFreq
+Reads the currently tuned frequency from the Si4703 registers.  
+**Input:** none  
+**Output:** returns frequency as a float.
+
 
 ### Functions from library U8g2
 Functions from library U8g2 for SSD1306 display driver by [OLIKRAUS](https://github.com/olikraus/u8g2/tree/master/csrc):
