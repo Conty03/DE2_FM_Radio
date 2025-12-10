@@ -2,7 +2,9 @@
  * _128A_TWI.h
  *
  * Created: 2018-04-11 오전 8:08:44
- *  Author: kiki
+ * Author: kiki
+ * Reference: https://github.com/eziya/AVR_SI4703/tree/master
+ * 
  */ 
 
 #ifndef __128A_TWI_H_
