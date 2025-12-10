@@ -1,10 +1,14 @@
 /*
- * main.c
+ * File:    main.c
+ * Author:  Adam Keřka, Karel Kubín, Martin Čontoš
+ * Date:    12/2025
+ * Project: FM Radio Receiver with OLED display
+ * Target:  ATmega328P on breadboard (internal oscilator 8 MHz)
  *
- * Reference
- * GPIO library:
- * Timer library:
- * Si4703 library: https://github.com/eziya/AVR_SI4703/tree/master
+ * REFERENCES & LIBRARIES:
+ * - GPIO/Timer Libs: https://github.com/tomas-fryza/avr-labs
+ * - Si4703 Driver:   https://github.com/eziya/AVR_SI4703
+ * - OLED Driver:     https://github.com/olikraus/u8g2
  *
  */
 
