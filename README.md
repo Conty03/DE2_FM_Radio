@@ -71,12 +71,19 @@ VOLEXT is 8th bit of the System congiguration 3 register and attenuates the outp
 
 ### Functions from library U8g2
 Functions from library U8g2 for SSD1306 display driver by [OLIKRAUS](https://github.com/olikraus/u8g2/tree/master/csrc):
+
 u8g2_InitDisplay() - initializes the display
+
 u8g2_SetPowerSave() - turns on/off power save mode (1 = on, 0 = off)
+
 u8g2_SetContrast() - sets the level of contrast (from 0 to 255)
+
 u8g2_ClearBuffer() - clears the screen
+
 u8g2_SetFont() - 
+
 u8g2_DrawStr()
+
 u8g2_SendBuffer()
  
 
@@ -87,6 +94,8 @@ Library U8g2 for SSD1306 display driver by [OLIKRAUS](https://github.com/olikrau
 Used together with [gpio.c](https://raw.githubusercontent.com/tomas-fryza/avr-labs/master/library/gpio/gpio.c) and [gpio.h](https://raw.githubusercontent.com/tomas-fryza/avr-labs/master/library/gpio/gpio.h) by [tomas-fryza](https://github.com/tomas-fryza)
 
 Library [timer.h](https://raw.githubusercontent.com/tomas-fryza/avr-labs/refs/heads/master/library/timer/timer.h) by [tomas-fryza](https://github.com/tomas-fryza)
+
+Libraries 128A_TWI.c, 128A_TWI.h, 128A_USART.c,128A_USART.h by kiki 
 
 Library AVR_Si4703 for Si4703 FM module by [eziya](https://github.com/eziya/AVR_SI4703)
 
