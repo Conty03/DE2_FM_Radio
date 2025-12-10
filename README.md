@@ -30,6 +30,9 @@ This project focuses on the implementation of an FM receiver system using the Si
 | Led                    | ---              | Indicates power state ON/OFF  |           
 
 
+<p align="center">
+<img width="3174" height="2191" alt="_DSC4238_crop" src="https://github.com/user-attachments/assets/8f1b53e2-3849-4d26-9c42-edf5b539e512" />
+
 ## Software 
 
 Upon powering the device, the ATmega328P initializes the FM module and display and immediately sets an initial frequency. This is achieved by calling the seek function, which scans the FM band and locks onto the strongest station available. Simultaneously initial frequency is displayed on the OLED. The radio then begins to play without unnecessary delay. 
